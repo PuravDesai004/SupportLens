@@ -1,0 +1,36 @@
+{
+  "scope": "Development assessment; used by the predeclared release gate, not an untouched final test.",
+  "caveat": "Paired, class-stratified row bootstrap is descriptive and does not account for prior dataset exposure.",
+  "models": {
+    "word_logistic": {
+      "macro_f1_gain_vs_baseline": 0.0,
+      "bootstrap_95": {
+        "lower_95": 0.0,
+        "upper_95": 0.0,
+        "repeats": 1000,
+        "seed": 2027,
+        "unit": "class-stratified rows, paired across models"
+      }
+    },
+    "word_char_logistic": {
+      "macro_f1_gain_vs_baseline": 0.02713620444898701,
+      "bootstrap_95": {
+        "lower_95": 0.017159189364814545,
+        "upper_95": 0.03789781121896214,
+        "repeats": 1000,
+        "seed": 2027,
+        "unit": "class-stratified rows, paired across models"
+      }
+    },
+    "word_torch": {
+      "macro_f1_gain_vs_baseline": 0.004074569368183623,
+      "bootstrap_95": {
+        "lower_95": -0.007265574044680451,
+        "upper_95": 0.01563765606145017,
+        "repeats": 1000,
+        "seed": 2027,
+        "unit": "class-stratified rows, paired across models"
+      }
+    }
+  }
+}
