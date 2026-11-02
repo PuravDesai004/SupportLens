@@ -2,7 +2,7 @@
 
 SupportLens is an educational English-language banking-intent classifier. It suggests one of 77 categories for a support question, shows alternative categories, and flags low-scoring predictions for human review. It uses the public BANKING77 research dataset; it is not a bank service, does not access accounts or route tickets, and does not answer financial questions. Please do not enter account numbers, passwords, or other sensitive personal information.
 
-Repository: [PuravDesai004/SupportLens](https://github.com/PuravDesai004/SupportLens). The app is **local only** at the owner's request; no hosted demo or hosting account is required. [GitHub Actions](https://github.com/PuravDesai004/SupportLens/actions) runs the offline tests. The [first hosted run](https://github.com/PuravDesai004/SupportLens/actions/runs/41495687880) passed on commit `546328fce1650cf0f2c21f6544acccae60aeb76d`; check Actions for the latest commit's result.
+Repository: [PuravDesai004/SupportLens](https://github.com/PuravDesai004/SupportLens). The app is **local only** at the owner's request; no hosted demo or hosting account is required. [GitHub Actions](https://github.com/PuravDesai004/SupportLens/actions) runs the offline tests. [Hosted run 41496473950](https://github.com/PuravDesai004/SupportLens/actions/runs/41496473950) passed on commit `20be076b02cea75de825bcd3480682924fee7fe3`; check Actions for the latest commit's result.
 
 ## Run the app on Windows
 
@@ -16,6 +16,8 @@ $Python312 = "$env:USERPROFILE\.cache\codex-runtimes\codex-primary-runtime\depen
 ```
 
 On another machine, substitute the path to an installed Python 3.12 executable. If `py -3.12` is registered, `py -3.12 -m venv .venv` is an alternative. The app uses the included selected artifacts and does not download data, retrain, or need API keys at startup. Use only artifacts from a trusted source: joblib files can execute code when loaded.
+
+A real local browser check: entering **“Where is my new card?”** returned **Card arrival**, a **93.3%** model score, and an above-threshold indication. This is one example, not an accuracy estimate.
 
 To install training and test dependencies as well:
 

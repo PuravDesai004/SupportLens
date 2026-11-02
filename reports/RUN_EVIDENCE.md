@@ -2,6 +2,8 @@
 
 The source data were downloaded from the pinned official revision in `data_manifest.json` and verified against the SHA-256 values recorded there. Training and evaluation were run on Windows with Python 3.12.14, scikit-learn 1.6.1 and CPU PyTorch 2.6.0+cpu. Direct dependencies are pinned in the requirements files; exact floating-point reproduction can vary by platform.
 
+The `supportlens.data.download_data` downloader was also run against a separate project-local temporary folder; both newly downloaded official files matched their pinned SHA-256 values.
+
 The selection rule in `train.py` was fixed before official test evaluation: higher validation macro F1, with exact ties to the baseline. `selection.json` was written at 2026-11-02T17:46:14Z; `metrics.json` was written at 2026-11-02T17:46:36Z. Both models were trained on the official training data's derived training split. The baseline converged without a recorded warning. The test results have since been observed. The later addition of an optional output-directory setting did not alter training settings, fitted artifacts, or the recorded test results.
 
 Commands from the project directory (PowerShell; environment setup is in the README):
@@ -39,4 +41,4 @@ DuckDB reconciled the selected-model CSV to 3,080 rows, 382 errors and 624 revie
 
 After the first push, a Git line-ending conversion was found to have changed the committed CSV bytes relative to the recorded hash. The original Windows CSV hash was `b1a627a03ff2c805d7e29a6926f122d93a678f6615a03889b4ba51c747c41814`. The same rows were converted to LF line endings, the recorded hash was updated, and both the exporter and `.gitattributes` now use LF; an integration test checks the hash and DuckDB totals. No model was retrained and the test set was not scored again for this correction.
 
-The GitHub Actions workflow is configured in `.github/workflows/tests.yml`. [Hosted run 41495687880](https://github.com/PuravDesai004/SupportLens/actions/runs/41495687880) passed for commit `546328fce1650cf0f2c21f6544acccae60aeb76d`; check Actions for later commits. The owner requested a local-only demo, so no hosting account or public demo was created.
+The GitHub Actions workflow is configured in `.github/workflows/tests.yml`. [Hosted run 41496473950](https://github.com/PuravDesai004/SupportLens/actions/runs/41496473950) passed for commit `20be076b02cea75de825bcd3480682924fee7fe3`, including the CSV integrity test; check Actions for later commits. The owner requested a local-only demo, so no hosting account or public demo was created.

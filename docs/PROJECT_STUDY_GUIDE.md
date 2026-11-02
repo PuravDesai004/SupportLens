@@ -121,7 +121,7 @@ $env:TMP = $env:TEMP
 .\.venv\Scripts\python.exe -m pytest -q --basetemp=.pytest_tmp
 ```
 
-GitHub Actions is configured in `.github/workflows/tests.yml` for Python 3.12 and offline tests. The [first hosted run](https://github.com/PuravDesai004/SupportLens/actions/runs/41495687880) passed for commit `546328fce1650cf0f2c21f6544acccae60aeb76d`. A workflow file by itself is not proof that a later commit passed; inspect the repository's Actions page for the run and commit under review.
+GitHub Actions is configured in `.github/workflows/tests.yml` for Python 3.12 and offline tests. [Hosted run 41496473950](https://github.com/PuravDesai004/SupportLens/actions/runs/41496473950) passed for commit `20be076b02cea75de825bcd3480682924fee7fe3`. A workflow file by itself is not proof that a later commit passed; inspect the repository's Actions page for the run and commit under review.
 
 ## 12. Design decisions and alternatives
 
