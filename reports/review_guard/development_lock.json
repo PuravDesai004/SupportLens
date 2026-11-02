@@ -1,0 +1,158 @@
+{
+  "created_at_utc": "2026-11-02T18:52:00.138196+00:00",
+  "crossfold_diagnostic": {
+    "caveat": "Thresholds are selected on other OOF folds, but their underlying model training sets overlap; the existing temperature was fitted on all development OOF rows.",
+    "existing_pooled": {
+      "accepted": 6511,
+      "accepted_accuracy": 0.9557671632621717,
+      "accepted_errors": 288,
+      "examples": 8001,
+      "flagged_errors": 709,
+      "reviewed": 1490,
+      "total_errors": 997
+    },
+    "folds": [
+      {
+        "comparison": {
+          "additional_review_fraction": 0.1339084771192798,
+          "existing": {
+            "accepted": 2184,
+            "accepted_accuracy": 0.9583333333333334,
+            "accepted_errors": 91,
+            "examples": 2666,
+            "flagged_errors": 240,
+            "reviewed": 482,
+            "total_errors": 331
+          },
+          "guarded": {
+            "accepted": 1827,
+            "accepted_accuracy": 0.9709906951286261,
+            "accepted_errors": 53,
+            "examples": 2666,
+            "flagged_errors": 278,
+            "reviewed": 839,
+            "total_errors": 331
+          },
+          "newly_reviewed": 357,
+          "newly_reviewed_correct": 319,
+          "newly_reviewed_errors": 38
+        },
+        "evaluation_examples": 2666,
+        "fold": 1,
+        "selection_examples": 5335,
+        "support_threshold": 0.35
+      },
+      {
+        "comparison": {
+          "additional_review_fraction": 0.1424821897262842,
+          "existing": {
+            "accepted": 2154,
+            "accepted_accuracy": 0.9558960074280408,
+            "accepted_errors": 95,
+            "examples": 2667,
+            "flagged_errors": 236,
+            "reviewed": 513,
+            "total_errors": 331
+          },
+          "guarded": {
+            "accepted": 1774,
+            "accepted_accuracy": 0.9673055242390078,
+            "accepted_errors": 58,
+            "examples": 2667,
+            "flagged_errors": 273,
+            "reviewed": 893,
+            "total_errors": 331
+          },
+          "newly_reviewed": 380,
+          "newly_reviewed_correct": 343,
+          "newly_reviewed_errors": 37
+        },
+        "evaluation_examples": 2667,
+        "fold": 2,
+        "selection_examples": 5334,
+        "support_threshold": 0.35
+      },
+      {
+        "comparison": {
+          "additional_review_fraction": 0.13755622188905547,
+          "existing": {
+            "accepted": 2173,
+            "accepted_accuracy": 0.9530602853198343,
+            "accepted_errors": 102,
+            "examples": 2668,
+            "flagged_errors": 233,
+            "reviewed": 495,
+            "total_errors": 335
+          },
+          "guarded": {
+            "accepted": 1806,
+            "accepted_accuracy": 0.9640088593576965,
+            "accepted_errors": 65,
+            "examples": 2668,
+            "flagged_errors": 270,
+            "reviewed": 862,
+            "total_errors": 335
+          },
+          "newly_reviewed": 367,
+          "newly_reviewed_correct": 330,
+          "newly_reviewed_errors": 37
+        },
+        "evaluation_examples": 2668,
+        "fold": 3,
+        "selection_examples": 5333,
+        "support_threshold": 0.35
+      }
+    ],
+    "guarded_pooled": {
+      "accepted": 5407,
+      "accepted_accuracy": 0.9674496023673016,
+      "accepted_errors": 176,
+      "examples": 8001,
+      "flagged_errors": 821,
+      "reviewed": 2594,
+      "total_errors": 997
+    }
+  },
+  "guard_artifact_sha256": {
+    "model.joblib": "cf77dd9043faef4ed2691458c890f8057ee27ffdade4556a5a0b1e4d0b77f964",
+    "vectorizer.joblib": "7fc78abfecdbbd8edc790b1935a6e1727d9e92148b668d53de6c2ecf0de8593a"
+  },
+  "label_count": 77,
+  "main_artifact_sha256": {
+    "model.joblib": "787e1fa968e37e01ac12d609b3c5701c21c5aac3a2c72130b1de4a938988c4d3",
+    "vectorizer.joblib": "872b3f6d3f3a6d518858b4d4e5b9977e75da0555d1d231c6fa1a76245e33399d"
+  },
+  "main_temperature": 0.5173768763742894,
+  "main_threshold": 0.75,
+  "scope": "Previously used v2 development out-of-fold predictions; policy selection on these rows is optimistic.",
+  "selected": {
+    "comparison": {
+      "additional_review_fraction": 0.1379827521559805,
+      "existing": {
+        "accepted": 6511,
+        "accepted_accuracy": 0.9557671632621717,
+        "accepted_errors": 288,
+        "examples": 8001,
+        "flagged_errors": 709,
+        "reviewed": 1490,
+        "total_errors": 997
+      },
+      "guarded": {
+        "accepted": 5407,
+        "accepted_accuracy": 0.9674496023673016,
+        "accepted_errors": 176,
+        "examples": 8001,
+        "flagged_errors": 821,
+        "reviewed": 2594,
+        "total_errors": 997
+      },
+      "newly_reviewed": 1104,
+      "newly_reviewed_correct": 992,
+      "newly_reviewed_errors": 112
+    },
+    "eligible_cutoffs": 6,
+    "support_threshold": 0.35
+  },
+  "selection_rule": "Maximum additional accepted errors caught with <=15% extra reviews, >=200 accepted, no drop in accepted accuracy and >=10% error reduction; see docs/REVIEW_GUARD_PLAN.md.",
+  "source_oof_sha256": "2e0b763c8903c1897326b4569b3da4b00da256f38d13dc73d0c385810ec9ce17"
+}
