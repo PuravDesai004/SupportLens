@@ -1,0 +1,65 @@
+{
+  "artifact_sha256": {
+    "model.joblib": "e53e9646b1ac7a421b6f3946aede9623b34ae63da246dc37e1dd7657c8f93758",
+    "vectorizer.joblib": "459a8b6504005dd0a38e9d8db9f3fa9528d3ab35cd5eecdbe94fad4294ddb4e2"
+  },
+  "baseline": {
+    "C": 4.0,
+    "convergence_warnings": [],
+    "estimator": "LogisticRegression",
+    "iterations": [
+      45
+    ],
+    "max_iter": 500,
+    "solver": "lbfgs"
+  },
+  "locked_at_utc": "2026-11-02T17:46:14.008645+00:00",
+  "review_threshold": 0.35,
+  "rule": "Higher validation macro F1; exact ties select baseline. No test metrics used.",
+  "selected": "baseline",
+  "tfidf": {
+    "actual_features": 6000,
+    "dtype": "float32",
+    "max_features": 6000,
+    "min_df": 2,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "sublinear_tf": true
+  },
+  "threshold_rule": "Fixed in code before test evaluation; not tuned on test.",
+  "torch": {
+    "batch_size": 128,
+    "device": "cpu",
+    "epoch_training_loss": [
+      4.0175119990022505,
+      2.2272582857259002,
+      0.8290990561068102,
+      0.4223495845949909,
+      0.26085644916083567,
+      0.1755520329735959,
+      0.1251898948666499,
+      0.09311724338523152,
+      0.07103415247554766,
+      0.055824426152007604
+    ],
+    "epochs": 10,
+    "hidden_dim": 64,
+    "learning_rate": 0.003,
+    "loss": "CrossEntropyLoss",
+    "optimizer": "Adam"
+  },
+  "validation": {
+    "baseline": {
+      "accuracy": 0.879560219890055,
+      "examples": 2001,
+      "macro_f1": 0.8767005155950403
+    },
+    "torch": {
+      "accuracy": 0.8785607196401799,
+      "examples": 2001,
+      "macro_f1": 0.8732722279925254
+    }
+  }
+}

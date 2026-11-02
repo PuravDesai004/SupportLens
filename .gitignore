@@ -1,0 +1,14 @@
+.venv/
+.venv-app/
+.tmp/
+__pycache__/
+.pytest_cache/
+.pytest_tmp/
+*.py[cod]
+.env
+.env.*
+.streamlit/secrets.toml
+data/
+training_runs/
+reproduction/
+*.log

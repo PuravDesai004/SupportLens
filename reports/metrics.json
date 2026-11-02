@@ -1,0 +1,240 @@
+{
+  "duckdb_reconciled_totals": {
+    "errors": 382,
+    "examples": 3080,
+    "flagged_for_review": 624
+  },
+  "evaluated_at_utc": "2026-11-02T17:46:36.557557+00:00",
+  "models": {
+    "baseline": {
+      "accepted_count": 2456,
+      "accuracy": 0.875974025974026,
+      "accuracy_among_accepted": 0.9495114006514658,
+      "common_confusions": [
+        {
+          "count": 7,
+          "predicted_label": "card_payment_wrong_exchange_rate",
+          "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+        },
+        {
+          "count": 6,
+          "predicted_label": "card_not_working",
+          "true_label": "card_acceptance"
+        },
+        {
+          "count": 6,
+          "predicted_label": "why_verify_identity",
+          "true_label": "verify_my_identity"
+        },
+        {
+          "count": 5,
+          "predicted_label": "exchange_via_app",
+          "true_label": "fiat_currency_support"
+        },
+        {
+          "count": 5,
+          "predicted_label": "get_physical_card",
+          "true_label": "pin_blocked"
+        },
+        {
+          "count": 5,
+          "predicted_label": "verify_my_identity",
+          "true_label": "unable_to_verify_identity"
+        },
+        {
+          "count": 5,
+          "predicted_label": "get_disposable_virtual_card",
+          "true_label": "virtual_card_not_working"
+        },
+        {
+          "count": 4,
+          "predicted_label": "card_delivery_estimate",
+          "true_label": "card_arrival"
+        },
+        {
+          "count": 4,
+          "predicted_label": "top_up_failed",
+          "true_label": "top_up_reverted"
+        },
+        {
+          "count": 4,
+          "predicted_label": "verify_my_identity",
+          "true_label": "why_verify_identity"
+        },
+        {
+          "count": 4,
+          "predicted_label": "pin_blocked",
+          "true_label": "get_physical_card"
+        },
+        {
+          "count": 4,
+          "predicted_label": "balance_not_updated_after_bank_transfer",
+          "true_label": "pending_transfer"
+        },
+        {
+          "count": 4,
+          "predicted_label": "balance_not_updated_after_bank_transfer",
+          "true_label": "transfer_timing"
+        },
+        {
+          "count": 4,
+          "predicted_label": "getting_virtual_card",
+          "true_label": "virtual_card_not_working"
+        },
+        {
+          "count": 4,
+          "predicted_label": "disposable_card_limits",
+          "true_label": "get_disposable_virtual_card"
+        },
+        {
+          "count": 4,
+          "predicted_label": "top_up_reverted",
+          "true_label": "top_up_failed"
+        },
+        {
+          "count": 4,
+          "predicted_label": "transfer_not_received_by_recipient",
+          "true_label": "balance_not_updated_after_bank_transfer"
+        },
+        {
+          "count": 3,
+          "predicted_label": "card_arrival",
+          "true_label": "card_delivery_estimate"
+        },
+        {
+          "count": 3,
+          "predicted_label": "fiat_currency_support",
+          "true_label": "exchange_via_app"
+        },
+        {
+          "count": 3,
+          "predicted_label": "card_not_working",
+          "true_label": "contactless_not_working"
+        }
+      ],
+      "examples": 3080,
+      "macro_f1": 0.8761319612902874,
+      "review_count": 624,
+      "review_rate_of_all_examples": 0.2025974025974026,
+      "review_threshold": 0.35,
+      "supported_labels": 77
+    },
+    "torch": {
+      "accepted_count": 2940,
+      "accuracy": 0.8873376623376623,
+      "accuracy_among_accepted": 0.9105442176870748,
+      "common_confusions": [
+        {
+          "count": 13,
+          "predicted_label": "why_verify_identity",
+          "true_label": "verify_my_identity"
+        },
+        {
+          "count": 5,
+          "predicted_label": "card_not_working",
+          "true_label": "contactless_not_working"
+        },
+        {
+          "count": 5,
+          "predicted_label": "top_up_failed",
+          "true_label": "top_up_reverted"
+        },
+        {
+          "count": 5,
+          "predicted_label": "direct_debit_payment_not_recognised",
+          "true_label": "card_payment_not_recognised"
+        },
+        {
+          "count": 5,
+          "predicted_label": "verify_my_identity",
+          "true_label": "unable_to_verify_identity"
+        },
+        {
+          "count": 5,
+          "predicted_label": "pin_blocked",
+          "true_label": "get_physical_card"
+        },
+        {
+          "count": 5,
+          "predicted_label": "balance_not_updated_after_bank_transfer",
+          "true_label": "pending_transfer"
+        },
+        {
+          "count": 4,
+          "predicted_label": "exchange_via_app",
+          "true_label": "fiat_currency_support"
+        },
+        {
+          "count": 4,
+          "predicted_label": "card_not_working",
+          "true_label": "card_acceptance"
+        },
+        {
+          "count": 4,
+          "predicted_label": "get_disposable_virtual_card",
+          "true_label": "disposable_card_limits"
+        },
+        {
+          "count": 3,
+          "predicted_label": "get_physical_card",
+          "true_label": "pin_blocked"
+        },
+        {
+          "count": 3,
+          "predicted_label": "transfer_fee_charged",
+          "true_label": "top_up_by_bank_transfer_charge"
+        },
+        {
+          "count": 3,
+          "predicted_label": "top_up_failed",
+          "true_label": "pending_top_up"
+        },
+        {
+          "count": 3,
+          "predicted_label": "compromised_card",
+          "true_label": "card_payment_not_recognised"
+        },
+        {
+          "count": 3,
+          "predicted_label": "why_verify_identity",
+          "true_label": "unable_to_verify_identity"
+        },
+        {
+          "count": 3,
+          "predicted_label": "card_acceptance",
+          "true_label": "atm_support"
+        },
+        {
+          "count": 3,
+          "predicted_label": "declined_cash_withdrawal",
+          "true_label": "card_swallowed"
+        },
+        {
+          "count": 3,
+          "predicted_label": "balance_not_updated_after_bank_transfer",
+          "true_label": "transfer_timing"
+        },
+        {
+          "count": 3,
+          "predicted_label": "declined_card_payment",
+          "true_label": "virtual_card_not_working"
+        },
+        {
+          "count": 3,
+          "predicted_label": "card_payment_wrong_exchange_rate",
+          "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+        }
+      ],
+      "examples": 3080,
+      "macro_f1": 0.8877830409670977,
+      "review_count": 140,
+      "review_rate_of_all_examples": 0.045454545454545456,
+      "review_threshold": 0.35,
+      "supported_labels": 77
+    }
+  },
+  "selected_before_test": "baseline",
+  "selected_csv_sha256": "b1a627a03ff2c805d7e29a6926f122d93a678f6615a03889b4ba51c747c41814",
+  "split": "Full official BANKING77 test split",
+  "test_previously_viewed": false
+}
