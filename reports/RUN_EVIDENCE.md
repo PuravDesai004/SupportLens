@@ -24,7 +24,7 @@ New-Item -ItemType Directory -Force -Path '.tmp' | Out-Null
 $env:TEMP = (Resolve-Path '.tmp').Path
 $env:TMP = $env:TEMP
 .\.venv\Scripts\python.exe -m pytest -q --basetemp=.pytest_tmp
-# 8 passed, including Streamlit AppTest with the real selected artifact.
+# 9 passed, including Streamlit AppTest with the real selected artifact and CSV integrity checks.
 .\.venv\Scripts\python.exe -m pip check
 # No broken requirements found.
 ```
@@ -37,4 +37,6 @@ The app was also launched from that runtime-only environment on `127.0.0.1:8501`
 
 DuckDB reconciled the selected-model CSV to 3,080 rows, 382 errors and 624 review flags. The public test split has seven normalized overlaps with the official training split (six derived train, one validation), all with matching labels; the primary metrics retain all test rows. `metrics.json` records confusion pairs and whether test results had previously been viewed.
 
-The GitHub Actions workflow is configured in `.github/workflows/tests.yml`. Check the repository's Actions page for the actual hosted result. A public demo is not verified by this local run.
+After the first push, a Git line-ending conversion was found to have changed the committed CSV bytes relative to the recorded hash. The original Windows CSV hash was `b1a627a03ff2c805d7e29a6926f122d93a678f6615a03889b4ba51c747c41814`. The same rows were converted to LF line endings, the recorded hash was updated, and both the exporter and `.gitattributes` now use LF; an integration test checks the hash and DuckDB totals. No model was retrained and the test set was not scored again for this correction.
+
+The GitHub Actions workflow is configured in `.github/workflows/tests.yml`. [Hosted run 41495687880](https://github.com/PuravDesai004/SupportLens/actions/runs/41495687880) passed for commit `546328fce1650cf0f2c21f6544acccae60aeb76d`; check Actions for later commits. The owner requested a local-only demo, so no hosting account or public demo was created.

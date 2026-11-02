@@ -82,7 +82,7 @@ def main(allow_rerun=False):
                              "predicted_label": [labels[i] for i in pred], "score": score,
                              "correct": pred == y_test, "review": review})
     csv_path = REPORT_DIR / "evaluation.csv"
-    exported.to_csv(csv_path, index=False, float_format="%.8f")
+    exported.to_csv(csv_path, index=False, float_format="%.8f", lineterminator="\n")
     summary = sql_summary(csv_path)
     summary.to_csv(REPORT_DIR / "intent_summary.csv", index=False)
     if (int(summary.examples.sum()) != len(exported) or int(summary.errors.sum()) != int((~exported.correct).sum())

@@ -41,4 +41,4 @@ If an artifact is missing, corrupt or incompatible, the app displays a setup err
 - `reports/`: recorded results, audit and selected-model CSV; `sql/`: the query that checks it.
 - `tests/`: offline fixtures plus a Streamlit `AppTest` with the packaged artifact; `.github/workflows/tests.yml`: hosted offline test configuration.
 
-The app is a single Streamlit process, not a bank integration, API service, RAG system or production routing system.
+The app is a single local Streamlit process, not a bank integration, API service, RAG system or production routing system. The owner requested a local-only demo.

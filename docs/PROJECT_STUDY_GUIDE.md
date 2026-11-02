@@ -106,7 +106,7 @@ An example confusion in this run: seven test examples labeled `wrong_exchange_ra
 
 `artifacts/vectorizer.joblib`, `artifacts/model.joblib`, and `artifacts/metadata.json` belong together. Metadata records 77 sorted labels, 6,000 input features, model type, review threshold, version, and checksums. `predict.load_bundle` checks compatibility and hashes before loading the trusted joblib files. A hash mismatch or missing file yields an error; it does not make up an answer. Checksums alone do not make an untrusted pickle safe.
 
-Streamlit caches the bundle and applies it to the question. The app offers sample questions, rejects empty and very long inputs, shows top alternatives and limitations, and requests that visitors omit sensitive information. It does not print or save visitor text in its own code. A host may still keep logs. A public Streamlit deployment, if obtained, shows the app runs online; it does not prove production infrastructure or an integration with a bank.
+Streamlit caches the bundle and applies it to the question. The app offers sample questions, rejects empty and very long inputs, shows top alternatives and limitations, and requests that visitors omit sensitive information. It does not print or save visitor text in its own code. The owner requested a local-only demo, so no public app was deployed. A future public host may retain logs, and a public demo would not prove production infrastructure or an integration with a bank.
 
 ## 11. Testing and CI
 
@@ -121,7 +121,7 @@ $env:TMP = $env:TEMP
 .\.venv\Scripts\python.exe -m pytest -q --basetemp=.pytest_tmp
 ```
 
-GitHub Actions is configured in `.github/workflows/tests.yml` for Python 3.12 and offline tests. A workflow file by itself is not proof that hosted CI passed; inspect the repository's Actions page for the run and commit under review.
+GitHub Actions is configured in `.github/workflows/tests.yml` for Python 3.12 and offline tests. The [first hosted run](https://github.com/PuravDesai004/SupportLens/actions/runs/41495687880) passed for commit `546328fce1650cf0f2c21f6544acccae60aeb76d`. A workflow file by itself is not proof that a later commit passed; inspect the repository's Actions page for the run and commit under review.
 
 ## 12. Design decisions and alternatives
 
@@ -155,7 +155,7 @@ For a real bank, separate work would include representative and consented data, 
 
 10. *How was leakage addressed?* TF-IDF was fit on derived train only and normalized groups were kept together between derived train and validation. Seven normalized official train/test overlaps remain disclosed.
 11. *How are the labels kept aligned?* A sorted `LabelEncoder` maps training labels to IDs; the ordered labels and model dimensions are saved and checked at inference.
-12. *What was actually deployed?* The local app serves logistic regression; consult the repository and demo status for any verified public deployment. The PyTorch candidate remains training code and evaluation evidence.
+12. *What runs in the demo?* The local app serves logistic regression. The owner requested a local-only demo; the PyTorch candidate remains training code and evaluation evidence.
 13. *What should you say about impact?* State the measured dataset results and limits. There is no evidence of real customer use or a time or cost saving.
 
 ## 14. Hands-on exercises

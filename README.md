@@ -2,7 +2,7 @@
 
 SupportLens is an educational English-language banking-intent classifier. It suggests one of 77 categories for a support question, shows alternative categories, and flags low-scoring predictions for human review. It uses the public BANKING77 research dataset; it is not a bank service, does not access accounts or route tickets, and does not answer financial questions. Please do not enter account numbers, passwords, or other sensitive personal information.
 
-Repository: [PuravDesai004/SupportLens](https://github.com/PuravDesai004/SupportLens). Public demo: **not yet verified**. [GitHub Actions](https://github.com/PuravDesai004/SupportLens/actions) contains the configured workflow; check the actual run before calling CI passed.
+Repository: [PuravDesai004/SupportLens](https://github.com/PuravDesai004/SupportLens). The app is **local only** at the owner's request; no hosted demo or hosting account is required. [GitHub Actions](https://github.com/PuravDesai004/SupportLens/actions) runs the offline tests. The [first hosted run](https://github.com/PuravDesai004/SupportLens/actions/runs/41495687880) passed on commit `546328fce1650cf0f2c21f6544acccae60aeb76d`; check Actions for the latest commit's result.
 
 ## Run the app on Windows
 
