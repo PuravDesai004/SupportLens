@@ -11,6 +11,9 @@ from supportlens.experiment_v2 import REPORTS, RUNS, checked_training_data, expe
 
 
 def main():
+    output_names = ("selected_assessment.csv", "selected_assessment_intent_summary.csv", "assessment_export.json")
+    if any((REPORTS / name).exists() for name in output_names):
+        raise FileExistsError("Refusing to overwrite historical assessment evidence")
     final = json.loads((REPORTS / "final_lock.json").read_text(encoding="utf-8"))
     if not final["promoted"]:
         raise RuntimeError("V1 was retained; there is no promoted v2 assessment export")

@@ -97,6 +97,31 @@ def test_review_threshold_temperature_and_release_pointer(tmp_path):
         load_active_bundle(tmp_path)
 
 
+def test_review_guard_files_are_checked_before_loading(tmp_path):
+    from supportlens.promote_review_guard import label_hash
+    labels = ["card", "transfer"]
+    texts = ["card delivery", "card missing", "transfer pending", "transfer late"]
+    vectorizer = TfidfVectorizer().fit(texts)
+    x = vectorizer.transform(texts)
+    model = LogisticRegression().fit(x, [0, 0, 1, 1])
+    for name, obj in (("vectorizer.joblib", vectorizer), ("model.joblib", model),
+                      ("review_vectorizer.joblib", vectorizer), ("review_model.joblib", model)):
+        joblib.dump(obj, tmp_path / name)
+    files = ["vectorizer.joblib", "model.joblib", "review_vectorizer.joblib", "review_model.joblib"]
+    meta = {"model": "baseline", "input_dim": x.shape[1], "output_dim": 2, "labels": labels,
+            "sklearn_version": sklearn.__version__, "review_threshold": .75,
+            "sha256": {name: sha256_file(tmp_path / name) for name in files},
+            "review_guard": {"kind": "word_support", "vectorizer_file": "review_vectorizer.joblib",
+                             "model_file": "review_model.joblib", "input_dim": x.shape[1],
+                             "support_threshold": .475, "label_order_sha256": label_hash(labels)}}
+    (tmp_path / "metadata.json").write_text(json.dumps(meta), encoding="utf-8")
+    bundle = load_bundle(tmp_path)
+    assert predict("card delivery", bundle)["label"] in labels
+    (tmp_path / "review_model.joblib").write_bytes(b"tampered")
+    with pytest.raises(ValueError, match="checksum"):
+        load_bundle(tmp_path)
+
+
 def test_metrics_and_duckdb_totals_reconcile(tmp_path):
     y = np.array([0, 0, 1, 1])
     p = np.array([[.9, .1], [.4, .6], [.2, .8], [.45, .55]])

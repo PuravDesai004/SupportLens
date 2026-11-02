@@ -3,3 +3,5 @@ reports/evaluation.csv text eol=lf
 reports/experiment_v2/assignments.csv text eol=lf
 reports/experiment_v2/selected_assessment.csv text eol=lf
 artifacts/v2/metadata.json text eol=lf
+artifacts/v3/metadata.json text eol=lf
+reports/review_guard/assessment_comparison.csv text eol=lf

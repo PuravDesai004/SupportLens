@@ -1,0 +1,10 @@
+{
+  "accepted_errors": 42,
+  "contains_question_text": false,
+  "csv_sha256": "280b5028a93a8990bda3f8f01285563f489420dbb81a0973783111c71242f156",
+  "current_reviewed": 659,
+  "previous_reviewed": 274,
+  "rows": 2002,
+  "scope": "Previously viewed development assessment, not an independent test",
+  "test_set_rescored": false
+}

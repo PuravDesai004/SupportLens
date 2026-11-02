@@ -8,6 +8,9 @@ from supportlens.experiment_v2 import CANDIDATES, REPORTS, RUNS
 
 
 def main():
+    path = REPORTS / "development_fold_metrics.json"
+    if path.exists():
+        raise FileExistsError("Refusing to overwrite development fold evidence")
     with np.load(RUNS / "development_oof.npz") as arrays:
         y, folds = arrays["y"], arrays["fold_ids"]
         result = {}
@@ -19,7 +22,7 @@ def main():
                 result[name].append({"fold": fold, "examples": int(selected.sum()),
                                      "accuracy": float(accuracy_score(y[selected], pred[selected])),
                                      "macro_f1": float(f1_score(y[selected], pred[selected], average="macro", zero_division=0))})
-    (REPORTS / "development_fold_metrics.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2))
 
 

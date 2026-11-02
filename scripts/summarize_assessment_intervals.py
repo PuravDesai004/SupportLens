@@ -7,6 +7,9 @@ from supportlens.experiment_v2 import BASELINE, CANDIDATES, REPORTS, RUNS, macro
 
 
 def main():
+    path = REPORTS / "assessment_paired_intervals.json"
+    if path.exists():
+        raise FileExistsError("Refusing to overwrite assessment interval evidence")
     with np.load(RUNS / "assessment_probabilities.npz") as arrays:
         y = arrays["y"]
         baseline = arrays[BASELINE].argmax(axis=1)
@@ -19,7 +22,7 @@ def main():
     report = {"scope": "Development assessment; used by the predeclared release gate, not an untouched final test.",
               "caveat": "Paired, class-stratified row bootstrap is descriptive and does not account for prior dataset exposure.",
               "models": result}
-    (REPORTS / "assessment_paired_intervals.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2))
 
 

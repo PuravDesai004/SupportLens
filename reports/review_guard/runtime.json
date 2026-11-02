@@ -1,0 +1,21 @@
+{
+  "guard_model_bytes": 3481995,
+  "guard_vectorizer_bytes": 59943,
+  "platform": "Windows-11-10.0.26300-SP0",
+  "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+  "question_text_saved": false,
+  "results": {
+    "current_v3": {
+      "median_ms": 4.73240000064834,
+      "p95_ms": 6.07160500003374,
+      "repetitions": 100
+    },
+    "previous_v2": {
+      "median_ms": 3.4382500016363338,
+      "p95_ms": 3.5918750018026913,
+      "repetitions": 100
+    }
+  },
+  "scope": "Warm local single-question inference on one manually authored sample; not a service guarantee.",
+  "thread_limit": 4
+}

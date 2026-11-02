@@ -1,0 +1,312 @@
+{
+  "scope": "Manually authored illustrations, not user inputs, labeled benchmarks or estimates of out-of-scope detection.",
+  "examples": [
+    {
+      "kind": "in_domain",
+      "manually_authored_example": "My replacement card has not arrived yet.",
+      "previous": {
+        "label": "card_arrival",
+        "score": 0.9483410495841447,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "transfer_not_received_by_recipient",
+            "score": 0.034341695452546075
+          },
+          {
+            "label": "compromised_card",
+            "score": 0.010228998223423266
+          }
+        ]
+      },
+      "current": {
+        "label": "card_arrival",
+        "score": 0.9483410495841447,
+        "review": true,
+        "review_reasons": [
+          "weak_word_support"
+        ],
+        "alternatives": [
+          {
+            "label": "transfer_not_received_by_recipient",
+            "score": 0.034341695452546075
+          },
+          {
+            "label": "compromised_card",
+            "score": 0.010228998223423266
+          }
+        ]
+      }
+    },
+    {
+      "kind": "in_domain",
+      "manually_authored_example": "I cannot remember the PIN for my card.",
+      "previous": {
+        "label": "get_physical_card",
+        "score": 0.9643732182096532,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "pin_blocked",
+            "score": 0.025487603612952194
+          },
+          {
+            "label": "change_pin",
+            "score": 0.0016523271231035784
+          }
+        ]
+      },
+      "current": {
+        "label": "get_physical_card",
+        "score": 0.9643732182096532,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "pin_blocked",
+            "score": 0.025487603612952194
+          },
+          {
+            "label": "change_pin",
+            "score": 0.0016523271231035784
+          }
+        ]
+      }
+    },
+    {
+      "kind": "in_domain",
+      "manually_authored_example": "Why was I charged a fee for a cash withdrawal abroad?",
+      "previous": {
+        "label": "cash_withdrawal_charge",
+        "score": 0.9981565445208992,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "transfer_fee_charged",
+            "score": 0.0017444418127912098
+          },
+          {
+            "label": "card_payment_fee_charged",
+            "score": 5.987036794080848e-05
+          }
+        ]
+      },
+      "current": {
+        "label": "cash_withdrawal_charge",
+        "score": 0.9981565445208992,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "transfer_fee_charged",
+            "score": 0.0017444418127912098
+          },
+          {
+            "label": "card_payment_fee_charged",
+            "score": 5.987036794080848e-05
+          }
+        ]
+      }
+    },
+    {
+      "kind": "in_domain",
+      "manually_authored_example": "The same card payment appears twice on my statement.",
+      "previous": {
+        "label": "transaction_charged_twice",
+        "score": 0.9956463460797428,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "card_payment_not_recognised",
+            "score": 0.003928392142039791
+          },
+          {
+            "label": "reverted_card_payment?",
+            "score": 0.00024890609139112944
+          }
+        ]
+      },
+      "current": {
+        "label": "transaction_charged_twice",
+        "score": 0.9956463460797428,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "card_payment_not_recognised",
+            "score": 0.003928392142039791
+          },
+          {
+            "label": "reverted_card_payment?",
+            "score": 0.00024890609139112944
+          }
+        ]
+      }
+    },
+    {
+      "kind": "ambiguous",
+      "manually_authored_example": "My card fails only in one particular shop.",
+      "previous": {
+        "label": "declined_card_payment",
+        "score": 0.7536762388568968,
+        "review": false,
+        "review_reasons": [],
+        "alternatives": [
+          {
+            "label": "lost_or_stolen_card",
+            "score": 0.03352693677759589
+          },
+          {
+            "label": "transaction_charged_twice",
+            "score": 0.027647550384202663
+          }
+        ]
+      },
+      "current": {
+        "label": "declined_card_payment",
+        "score": 0.7536762388568968,
+        "review": true,
+        "review_reasons": [
+          "weak_word_support"
+        ],
+        "alternatives": [
+          {
+            "label": "lost_or_stolen_card",
+            "score": 0.03352693677759589
+          },
+          {
+            "label": "transaction_charged_twice",
+            "score": 0.027647550384202663
+          }
+        ]
+      }
+    },
+    {
+      "kind": "out_of_scope",
+      "manually_authored_example": "Can you recommend a vegetarian pizza?",
+      "previous": {
+        "label": "fiat_currency_support",
+        "score": 0.16116929050315312,
+        "review": true,
+        "review_reasons": [
+          "low_score"
+        ],
+        "alternatives": [
+          {
+            "label": "request_refund",
+            "score": 0.1163684475680473
+          },
+          {
+            "label": "country_support",
+            "score": 0.11194745733035369
+          }
+        ]
+      },
+      "current": {
+        "label": "fiat_currency_support",
+        "score": 0.16116929050315312,
+        "review": true,
+        "review_reasons": [
+          "low_score",
+          "weak_word_support"
+        ],
+        "alternatives": [
+          {
+            "label": "request_refund",
+            "score": 0.1163684475680473
+          },
+          {
+            "label": "country_support",
+            "score": 0.11194745733035369
+          }
+        ]
+      }
+    },
+    {
+      "kind": "out_of_scope",
+      "manually_authored_example": "What is the weather like on Mars?",
+      "previous": {
+        "label": "direct_debit_payment_not_recognised",
+        "score": 0.5926330757131968,
+        "review": true,
+        "review_reasons": [
+          "low_score"
+        ],
+        "alternatives": [
+          {
+            "label": "exchange_rate",
+            "score": 0.05442893479566717
+          },
+          {
+            "label": "top_up_limits",
+            "score": 0.05416281870323689
+          }
+        ]
+      },
+      "current": {
+        "label": "direct_debit_payment_not_recognised",
+        "score": 0.5926330757131968,
+        "review": true,
+        "review_reasons": [
+          "low_score",
+          "weak_word_support"
+        ],
+        "alternatives": [
+          {
+            "label": "exchange_rate",
+            "score": 0.05442893479566717
+          },
+          {
+            "label": "top_up_limits",
+            "score": 0.05416281870323689
+          }
+        ]
+      }
+    },
+    {
+      "kind": "out_of_scope",
+      "manually_authored_example": "How do I cancel my Netflix account?",
+      "previous": {
+        "label": "terminate_account",
+        "score": 0.5217158198497234,
+        "review": true,
+        "review_reasons": [
+          "low_score"
+        ],
+        "alternatives": [
+          {
+            "label": "cancel_transfer",
+            "score": 0.46032553237584567
+          },
+          {
+            "label": "request_refund",
+            "score": 0.009135558839569007
+          }
+        ]
+      },
+      "current": {
+        "label": "terminate_account",
+        "score": 0.5217158198497234,
+        "review": true,
+        "review_reasons": [
+          "low_score",
+          "weak_word_support"
+        ],
+        "alternatives": [
+          {
+            "label": "cancel_transfer",
+            "score": 0.46032553237584567
+          },
+          {
+            "label": "request_refund",
+            "score": 0.009135558839569007
+          }
+        ]
+      }
+    }
+  ]
+}

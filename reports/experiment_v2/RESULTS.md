@@ -1,5 +1,7 @@
 # SupportLens v2: experiment and release evidence
 
+**Historical v2 record:** the current v3 review policy is documented separately in [review guard evidence](../review_guard/RESULTS.md); v2 classification and score results below remain unchanged.
+
 ## Scope and preserved baseline
 
 The original v1 baseline, vectorizer, labels and 0.35 policy are preserved in `artifacts/previous_v1/`; the root v1 files and prior `reports/` remain intact. Their hashes, dimensions and class order were checked, and nine pre-change tests passed. No preprocessing, model-file or label-order mismatch was found. The original audit and representative **public dataset** validation errors are in `BASELINE_AUDIT.md` and `baseline_error_audit.json`.

@@ -1,0 +1,9 @@
+{
+  "checked_at_utc": "2026-11-02T19:06:29.050891+00:00",
+  "same_assessment_comparison": true,
+  "same_cutoff": true,
+  "same_export_sha256": true,
+  "same_v3_metadata_sha256": true,
+  "scope": "Same saved predictions and seeds in a separate output root; not an independent evaluation.",
+  "test_rescored": false
+}

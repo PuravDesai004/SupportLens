@@ -8,7 +8,7 @@ A support agent might read an English banking question and need to identify its 
 
 An interview-sized explanation:
 
-> I started with a TF-IDF and logistic-regression baseline on BANKING77. To test an improvement fairly, I grouped normalized duplicate questions, retrained the baseline and two candidates on the same development folds, and fit text features inside each fold. A word-plus-character logistic model led on macro F1, then passed a predeclared assessment gate. I fitted a single temperature using out-of-fold predictions and chose a review threshold from development data. I packaged the matching model, vectorizer and labels for a local Streamlit app. The old test was already viewed, so I label a later comparison exploratory and do not treat confidence as a guarantee.
+> I started with a TF-IDF and logistic-regression baseline on BANKING77. I grouped normalized duplicate questions, retrained the baseline and two candidates on the same development folds, and fit text features inside each fold. A word-plus-character logistic model led on macro F1. I fitted a temperature using out-of-fold predictions, then added a conservative review check using a matched word-only model. The check can flag a category even when the main score is high. I measured its extra review workload on a previously viewed assessment and kept the app local. The old test was already viewed, and neither confidence nor the second check is a guarantee.
 
 ## 2. Follow the actual flow
 
@@ -21,7 +21,8 @@ Public training CSV -> grouped development / assessment split
   -> freeze release -> one exploratory comparison on previously viewed test
 
 Visitor text -> active release pointer -> saved word+character TF-IDF
-  -> logistic probabilities -> temperature scaling -> top intents + review flag
+  -> logistic probabilities -> temperature scaling -> top intents + score check
+  -> matched word-only model -> support for the main category -> extra review check
 ```
 
 The important files are `src/supportlens/data.py` (data validation and grouping), `experiment_v2.py` (staged experiment), `torch_model.py` (network), `calibration.py` (temperature and review policy), `promote_v2.py` (locked release), `predict.py` (inference), and `app.py` (interface). `docs/EXPERIMENT_PLAN.md` was committed before the comparison; `reports/experiment_v2/` holds the measured evidence.
@@ -108,23 +109,27 @@ The selected scalar is approximately 0.51738. Values below 1 sharpen the distrib
 
 The development rule chooses the lowest threshold on a fixed grid with at least 200 accepted examples and a 95% Wilson lower bound of at least 0.95 for accepted accuracy. If no threshold qualifies, the implementation can flag every prediction. The chosen v2 threshold is **0.75**. It is a policy selected from development data, not a promise.
 
-On the 2,002-row assessment, 1,728 were accepted and 274 were flagged. Accuracy among accepted predictions was 95.25%, but **82 accepted predictions were wrong**; 116 of 198 total errors were flagged. The retrained word baseline using the original fixed raw-score 0.35 policy accepted 1,592, with 87 accepted errors, and flagged 163 of its 250 errors. Its separately temperature-scaled policy accepted 1,554 with 96.20% accepted accuracy and 59 accepted errors, while flagging 448. These are descriptive comparisons on the same assessment, not guarantees; the raw and scaled thresholds use different score scales. Coverage and accuracy must be reported with their denominators.
+The earlier 0.75-only policy accepted 1,728 and reviewed 274 of the 2,002 assessment examples; 82 accepted predictions were wrong. The current policy also asks whether a matched **word-only** model gives the main model's suggested label at least 0.475 raw support. If not, it recommends review even when the main score is high. This is a second view trained on the same data, not an independent human reviewer and not a calibrated probability of correctness.
+
+The current policy accepted 1,343 and reviewed 659; **42 accepted predictions were wrong**. Of the 385 newly reviewed, 40 were errors and 345 were correct. Accepted accuracy rose from 95.25% to 96.87% on this previously viewed assessment, while review volume increased substantially. These comparisons use an assessment already used in earlier model selection and this release gate; they are not guarantees. The raw word-support threshold and temperature-scaled main threshold use different score scales. Coverage and accuracy must be reported with denominators.
+
+The 0.475 cutoff is the lowest value on a fixed grid that achieved a 95% Wilson lower bound of at least 97% for accepted accuracy on the development out-of-fold predictions, with at least 1,000 accepted examples. That target was not met as a guarantee on assessment: its observed accepted accuracy was 96.87%. An earlier, less conservative development-selected cutoff of 0.35 did not flag the owner's illustrative question; the follow-up plan was recorded before choosing the stricter cutoff. See `docs/REVIEW_CONSERVATIVE_PLAN.md` and `reports/review_guard/RESULTS.md` for the complete exploratory history.
 
 ## 9. The owner's example and other qualitative checks
 
 The original model returned `card_not_working` at 29.6%, then `declined_card_payment` at 7.9% and `top_up_failed` at 4.2%; it flagged the result. Its word vectorizer recognized 14 of 17 analyzed unigram/bigram occurrences; several location-related bigrams were absent, while words about a card not working contributed to the top logit. The wording could refer to a general card fault, a declined payment or a location-specific acceptance problem. There is no verified true label for this example.
 
-The new model returns the same top label at **96.4%** after temperature scaling, followed by `declined_card_payment` at 1.1% and `top_up_failed` at 0.4%. Its unscaled top score was about 49.1%. It is now above the 75% review threshold. This higher score is not proof that the category is correct; in particular, it shows why a high score must not replace human judgment. The app displays that warning next to every result.
+The main model returns the same top label at **96.4%** after temperature scaling, followed by `declined_card_payment` at 1.1% and `top_up_failed` at 0.4%. Its unscaled top score was about 49.1%. The current release **flags it for review** because the word-only model's raw support for that category is about 43.5%, below 47.5%. The rule is general, not a text match. The decision to investigate a stricter policy was prompted by the example; its cutoff was selected on development data and the example had no label and was not used in the threshold search. This higher score is not proof that the category is correct.
 
 `reports/experiment_v2/illustrative_predictions.json` contains other manually authored examples, clearly labeled as illustrative, including out-of-scope questions. A PIN-related example received a counterintuitive high-scoring category. Those examples are not labeled benchmark data and cannot estimate real-world accuracy or out-of-scope detection. The app does not save visitor-entered questions.
 
 ## 10. Artifacts and inference
 
-`artifacts/active.json` points to `artifacts/v2/` and records the metadata checksum. The v2 directory contains the saved `FeatureUnion`, classifier, label mapping, temperature, review policy, dimensions and file hashes. `predict.load_bundle()` resolves the active pointer; `load_bundle(path)` loads a specifically requested trusted release. The loader checks scikit-learn version, hashes, feature width and class ordering. These checks detect mismatched files, but joblib is safe to load only from a trusted source.
+`artifacts/active.json` points to `artifacts/v3/` and records the metadata checksum. V3 contains the saved main `FeatureUnion` and classifier **plus** the matched word-only vectorizer and classifier. Metadata records label mapping, temperature, both review thresholds, dimensions and file hashes. `predict.load_bundle()` resolves the active pointer; `load_bundle(path)` loads a specifically requested trusted release. The loader checks scikit-learn version, hashes, feature widths and class ordering. These checks detect mismatched files, but joblib is safe to load only from a trusted source.
 
-In `predict.py`, inference transforms the question using the saved features, obtains the model's probabilities, applies the fixed temperature, maps the highest indices to labels and compares the top score to the threshold. `app.py` caches the bundle, rejects blank or very long input, and presents the score, alternatives, review indication and limitations. It does not download data or train at startup. The demo stays local at the owner's request.
+In `predict.py`, inference obtains the main model's probabilities, applies the fixed temperature and maps the highest indices to labels. It also runs the word-only model and checks its raw probability for the main label. Either a low main score or weak word-only support triggers review; the main ranking and displayed score are unchanged. `app.py` explains which signal caused review, caches the bundle, rejects blank or very long input, and does not download data or train at startup. The demo stays local at the owner's request.
 
-The matched assessment run used a 16-logical-processor Windows machine with thread pools limited to four. The chosen model had 18,738 features, about 11.5 MB of coefficient/intercept arrays and an 8.47 MB serialized classifier; the vectorizer was about 0.16 MB. On that run its median single-question prediction was about 6.0 ms and a 2,002-question batch took roughly 0.20 seconds. These timings are illustrative measurements, not service-level promises or peak-memory measurements.
+The matched assessment run used a 16-logical-processor Windows machine with thread pools limited to four. The main model had 18,738 features, about 11.5 MB of coefficient/intercept arrays and an 8.47 MB serialized classifier; its vectorizer was about 0.16 MB. The word-only review files add about 3.54 MB compressed. A later warm single-question measurement on one manually authored example was about 3.4 ms before and 4.7 ms after the guard, on that machine. These are illustrative measurements, not service-level promises or peak-memory measurements.
 
 ## 11. Tests, SQL and CI
 
@@ -139,11 +144,11 @@ $env:OMP_NUM_THREADS = '4'
 .\.venv\Scripts\python.exe -m pytest -q --basetemp=.pytest_tmp
 ```
 
-`selected_assessment.csv` has only row IDs, labels, scores and flags. `sql/intent_summary.sql`, run through DuckDB, reconciles to 2,002 examples, 198 errors and 274 flags. `reports/evaluation.csv` is the historical v1 test export, not the active model's assessment. GitHub Actions is configured for Python 3.12; inspect the repository's Actions page for the actual run on the commit being discussed.
+`selected_assessment.csv` is the historical score-only export: DuckDB reconciles it to 2,002 examples, 198 errors and 274 flags. The current `reports/review_guard/assessment_comparison.csv` contains old and new flags, 659 current flags, row IDs and scores, but no question text. `reports/evaluation.csv` is the historical v1 test export. GitHub Actions is configured for Python 3.12; inspect the repository's Actions page for the actual run on the commit being discussed.
 
 ## 12. Reproduction and practical decisions
 
-The README gives the full staged commands using a fresh ignored `reproduction/v2` output directory. `development` writes the candidate lock; `assessment` fits all candidates without assessment rows and writes the release lock; `previously-viewed-test` requires that lock and refuses to overwrite its output; `promote_v2` copies the exact locked candidate files. Re-running the already-seen test is a reproduction, not a fresh evaluation. Seeds and pinned direct dependencies help, but results can vary by hardware and OS.
+The README gives the full staged commands using a fresh ignored `reproduction/v2` output directory. `development` writes the candidate lock; `assessment` fits all candidates without assessment rows and writes the release lock; `promote_v2` copies the exact locked candidate files. The review experiments then select cutoffs on OOF development predictions, assess them on previously viewed assessment predictions, and `promote_review_guard` packages the checked pair. The standard reproduction commands do not rescore the already-seen official test. Seeds and pinned direct dependencies help, but results can vary by hardware and OS.
 
 Why these choices? Word TF-IDF and logistic regression are fast, sparse and explainable. Character n-grams can cover spelling variations but add features and inference cost. A small PyTorch network teaches gradient-based learning without a GPU, at the cost of an additional runtime dependency if deployed. Temperature scaling improves score reliability in this assessment but changes score magnitudes and is not an out-of-scope detector. A review threshold trades human workload against accepted errors. The app is local and simple, not evidence of a production cloud platform.
 
@@ -155,10 +160,10 @@ Why these choices? Word TF-IDF and logistic regression are fast, sparse and expl
 4. **What does macro F1 emphasize?** It averages per-label F1 equally, so common labels do not dominate the result.
 5. **What is top-3 accuracy?** The fraction of examples whose correct label is among the three highest-ranked outputs.
 6. **Does temperature scaling improve classification?** It preserves rankings; it can change score calibration and review decisions, not top-1 or top-3 accuracy.
-7. **Is the 0.75 threshold guaranteed to catch 95% of errors?** No. It was chosen to target accepted accuracy in development, not error capture, and 82 assessment errors were accepted.
+7. **Does the current review check catch every error?** No. It left 42 assessment errors accepted, and the assessment was previously viewed. The 0.75 threshold and word-support check are not guarantees.
 8. **Why not call the official test untouched?** Its results were already examined in v1 and there are seven normalized train/test overlaps.
 9. **Why are logits passed directly to cross entropy?** The PyTorch loss incorporates the appropriate log-softmax internally.
-10. **Does 96.4% on the owner's example prove it is correct?** No. Its true label is unverified, the wording is ambiguous, and calibration is population-dependent.
+10. **Does 96.4% on the owner's example prove it is correct?** No. Its true label is unverified, the wording is ambiguous, and calibration is population-dependent. The second-view check now flags it.
 11. **What if an artifact is missing or mismatched?** The loader checks checksums, dimensions, class order and version, and the app shows a setup error.
 12. **What business impact was measured?** None. These are research-data metrics, not actual support volumes, time saved or customer outcomes.
 

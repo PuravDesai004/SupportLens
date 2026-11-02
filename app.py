@@ -63,12 +63,19 @@ if st.button("Predict intent", type="primary"):
         left.metric("Suggested category", readable(result["label"]))
         right.metric("Model score", f"{result['score']:.1%}")
         if result["review"]:
-            if bundle[2].get("review_all", False):
+            reasons = result["review_reasons"]
+            if "review_all" in reasons:
                 st.warning("Review recommended: this release flags every prediction for review.")
+            elif "low_score" in reasons and "weak_word_support" in reasons:
+                st.warning(f"Review recommended: the main score is below {bundle[2]['review_threshold']:.0%}, "
+                           "and a second model gives limited support to this category.")
+            elif "weak_word_support" in reasons:
+                st.warning("Review recommended: a second model gives limited support to this category, "
+                           "even though the displayed model score is high.")
             else:
                 st.warning(f"Review recommended: the top score is below the {bundle[2]['review_threshold']:.0%} review threshold.")
         else:
-            st.success("Above the review threshold. A human can still review this suggestion.")
+            st.success("No review flag from the available checks. A human can still review this suggestion.")
         if result["alternatives"]:
             st.caption("Other suggestions: " + " · ".join(
                 f"{readable(item['label'])} ({item['score']:.1%})" for item in result["alternatives"]))
@@ -77,7 +84,7 @@ if st.button("Predict intent", type="primary"):
 with st.expander("About the model and evaluation"):
     try:
         meta = cached_bundle()[2]
-        if meta.get("artifact_version") == 2:
+        if meta.get("artifact_version") in (2, 3):
             locked = json.loads((ROOT / "reports" / "experiment_v2" / "final_lock.json").read_text(encoding="utf-8"))
             if locked["selected_release"] != meta["candidate_id"]:
                 raise ValueError("The active model and evaluation report do not match")
@@ -96,7 +103,10 @@ with st.expander("About the model and evaluation"):
         if meta.get("review_all", False):
             st.write("All predictions are flagged for review.")
         else:
-            st.write(f"Review threshold: {meta['review_threshold']:.0%}. A high score does not reliably detect an unfamiliar question.")
+            st.write(f"Main score review threshold: {meta['review_threshold']:.0%}. A high score does not reliably detect an unfamiliar question.")
+        if meta.get("review_guard"):
+            st.write("A second word-only model can also flag a suggestion when it gives the category limited support. "
+                     "The models share training data and can both be wrong; this check does not reliably detect every ambiguity.")
     except (OSError, KeyError, ValueError):
         st.write("Evaluation evidence is unavailable. See the project README for setup.")
 
