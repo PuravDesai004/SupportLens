@@ -1,2 +1,3 @@
 # Keep the evaluation CSV's checksum stable across Windows and Linux checkouts.
 reports/evaluation.csv text eol=lf
+reports/experiment_v2/assignments.csv text eol=lf
