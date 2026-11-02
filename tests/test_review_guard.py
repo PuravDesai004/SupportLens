@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from supportlens.review_guard import compare_policy, review_masks, select_support_threshold
+from supportlens.review_guard import (compare_policy, review_masks, select_conservative_threshold,
+                                     select_support_threshold)
 
 
 def test_high_main_score_can_be_flagged_for_weak_second_view():
@@ -45,3 +46,14 @@ def test_selection_retains_existing_policy_when_no_errors_can_be_caught():
     main = np.tile([.9, .1], (20, 1))
     word = np.tile([.2, .8], (20, 1))
     assert select_support_threshold(np.zeros(20, dtype=int), main, word, .75, min_accepted=1) is None
+
+
+def test_conservative_selection_uses_the_lowest_qualifying_grid_cutoff():
+    main = np.tile([.9, .1], (1000, 1))
+    y = np.array([1] * 100 + [0] * 900)
+    word = np.vstack([np.tile([.2, .8], (120, 1)), np.tile([.8, .2], (880, 1))])
+    selected = select_conservative_threshold(y, main, word, .75, target_lower_bound=.97, min_accepted=500)
+    assert selected["support_threshold"] == .225
+    assert selected["comparison"]["guarded"]["accepted"] == 880
+    assert selected["comparison"]["guarded"]["accepted_errors"] == 0
+    assert selected["development_wilson_lower"] >= .97

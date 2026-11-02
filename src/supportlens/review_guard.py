@@ -1,5 +1,6 @@
 """A general second-view review signal; it never changes the predicted label."""
 import numpy as np
+from .calibration import wilson_lower
 
 
 def review_masks(main_probabilities, word_probabilities, main_threshold, support_threshold):
@@ -69,3 +70,17 @@ def select_support_threshold(y, main_probabilities, word_probabilities, main_thr
     threshold, result = max(options, key=lambda item: (item[1]["newly_reviewed_errors"],
                                                        -item[1]["newly_reviewed"], -item[0]))
     return {"support_threshold": threshold, "comparison": result, "eligible_cutoffs": len(options)}
+
+
+def select_conservative_threshold(y, main_probabilities, word_probabilities, main_threshold,
+                                  target_lower_bound=.97, min_accepted=1000):
+    """Maximize coverage on a fixed grid subject to a development accuracy bound."""
+    for step in range(37):
+        threshold = round(.05 + .025 * step, 3)
+        comparison = compare_policy(y, main_probabilities, word_probabilities, main_threshold, threshold)
+        accepted = comparison["guarded"]["accepted"]
+        errors = comparison["guarded"]["accepted_errors"]
+        lower = wilson_lower(accepted - errors, accepted)
+        if accepted >= min_accepted and lower is not None and lower >= target_lower_bound:
+            return {"support_threshold": threshold, "development_wilson_lower": lower, "comparison": comparison}
+    return None
