@@ -1,0 +1,41 @@
+{
+  "comparison": {
+    "additional_review_fraction": 0.0944055944055944,
+    "existing": {
+      "accepted": 1728,
+      "accepted_accuracy": 0.9525462962962963,
+      "accepted_errors": 82,
+      "examples": 2002,
+      "flagged_errors": 116,
+      "reviewed": 274,
+      "total_errors": 198
+    },
+    "guarded": {
+      "accepted": 1539,
+      "accepted_accuracy": 0.9610136452241715,
+      "accepted_errors": 60,
+      "examples": 2002,
+      "flagged_errors": 138,
+      "reviewed": 463,
+      "total_errors": 198
+    },
+    "newly_reviewed": 189,
+    "newly_reviewed_correct": 167,
+    "newly_reviewed_errors": 22
+  },
+  "created_at_utc": "2026-11-02T18:52:29.454855+00:00",
+  "guard_artifact_sha256": {
+    "model.joblib": "cf77dd9043faef4ed2691458c890f8057ee27ffdade4556a5a0b1e4d0b77f964",
+    "vectorizer.joblib": "7fc78abfecdbbd8edc790b1935a6e1727d9e92148b668d53de6c2ecf0de8593a"
+  },
+  "main_artifact_sha256": {
+    "model.joblib": "787e1fa968e37e01ac12d609b3c5701c21c5aac3a2c72130b1de4a938988c4d3",
+    "vectorizer.joblib": "872b3f6d3f3a6d518858b4d4e5b9977e75da0555d1d231c6fa1a76245e33399d"
+  },
+  "promoted": true,
+  "release_rule": "At least 5% of previously accepted errors caught, no loss in accepted accuracy, >=200 accepted and <=18% additional review.",
+  "scope": "Previously viewed v2 development assessment; used as a predeclared release gate, not an independent test.",
+  "selected_before_assessment": 0.35,
+  "source_assessment_sha256": "d13f058f0b963057276a0ef927b70a3c68d28aaadf6001af9c49682da5fc5505",
+  "test_set_rescored": false
+}
