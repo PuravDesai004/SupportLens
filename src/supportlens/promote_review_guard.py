@@ -16,20 +16,24 @@ def label_hash(labels):
 
 
 def main():
+    from .review_guard_experiment import checked_models
+
     decision = read(REPORT_DIR / "review_guard" / "conservative_final_lock.json")
     if not decision["promoted"]:
         raise RuntimeError("The conservative guard did not pass its release gate")
     v2 = ARTIFACT_DIR / "v2"
     word = RUN_DIR / "experiment_v2" / "word_logistic"
-    main_meta, word_meta = read(v2 / "metadata.json"), read(word / "metadata.json")
+    main_meta, word_meta = checked_models()
     if main_meta["sha256"] != decision["main_artifact_sha256"] or word_meta["sha256"] != decision["guard_artifact_sha256"]:
         raise ValueError("Model artifacts do not match the frozen review decision")
-    if main_meta["labels"] != word_meta["labels"] or main_meta["output_dim"] != word_meta["output_dim"]:
-        raise ValueError("The two models do not share a label order")
-    for directory, meta in ((v2, main_meta), (word, word_meta)):
-        for filename, digest in meta["sha256"].items():
-            if sha256_file(directory / filename) != digest:
-                raise ValueError("A frozen model file has changed")
+    development = read(REPORT_DIR / "review_guard" / "conservative_development_lock.json")
+    if (not development["selected"]
+            or development["selected"]["support_threshold"] != decision["selected_before_assessment"]
+            or development["main_temperature"] != main_meta["temperature"]
+            or development["main_threshold"] != main_meta["review_threshold"]
+            or development["main_artifact_sha256"] != main_meta["sha256"]
+            or development["guard_artifact_sha256"] != word_meta["sha256"]):
+        raise ValueError("The promoted policy differs from the frozen development selection")
     destination = ARTIFACT_DIR / "v3"
     if destination.exists():
         raise FileExistsError("The v3 release already exists; use a separate output root for reproduction")

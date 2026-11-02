@@ -4,24 +4,40 @@ from scipy.optimize import minimize_scalar
 from scipy.special import logsumexp
 
 
-def temperature_scale(probabilities, temperature):
-    """Rescale class log-scores with one positive scalar; rankings are preserved."""
-    p = np.asarray(probabilities, dtype=np.float64)
-    if p.ndim != 2 or p.shape[1] < 2 or not np.isfinite(p).all() or (p < 0).any():
-        raise ValueError("Expected a finite, nonnegative probability matrix")
-    if not np.isfinite(temperature) or temperature <= 0:
-        raise ValueError("Temperature must be positive and finite")
+def validate_probabilities(probabilities):
+    """Reject malformed model output before scoring, calibration or review."""
+    p = np.asarray(probabilities)
+    if (not np.issubdtype(p.dtype, np.number) or np.iscomplexobj(p)
+            or p.ndim != 2 or p.shape[0] == 0 or p.shape[1] < 2
+            or not np.isfinite(p).all() or (p < 0).any() or (p > 1).any()):
+        raise ValueError("Expected a nonempty matrix of finite probabilities between zero and one")
     if not np.allclose(p.sum(axis=1), 1.0, atol=1e-5):
         raise ValueError("Probability rows must sum to one")
+    return p
+
+
+def validate_labels(y, probabilities):
+    """Require one integer class ID per row; never truncate or broadcast labels."""
+    y = np.asarray(y)
+    if (y.ndim != 1 or len(y) != probabilities.shape[0]
+            or not np.issubdtype(y.dtype, np.integer)
+            or (y < 0).any() or (y >= probabilities.shape[1]).any()):
+        raise ValueError("Labels must be a one-dimensional integer class ID per probability row")
+    return y
+
+
+def temperature_scale(probabilities, temperature):
+    """Rescale class log-scores with one positive scalar; rankings are preserved."""
+    p = validate_probabilities(np.asarray(probabilities, dtype=np.float64))
+    if not np.isfinite(temperature) or temperature <= 0:
+        raise ValueError("Temperature must be positive and finite")
     logits = np.log(np.clip(p, 1e-15, 1.0)) / temperature
     return np.exp(logits - logsumexp(logits, axis=1, keepdims=True))
 
 
 def multiclass_log_loss(y, probabilities):
-    p = np.asarray(probabilities, dtype=np.float64)
-    y = np.asarray(y, dtype=np.int64)
-    if len(y) == 0 or p.shape[0] != len(y) or (y < 0).any() or (y >= p.shape[1]).any():
-        raise ValueError("Labels and probability rows must align")
+    p = validate_probabilities(np.asarray(probabilities, dtype=np.float64))
+    y = validate_labels(y, p)
     return float(-np.log(np.clip(p[np.arange(len(y)), y], 1e-15, 1.0)).mean())
 
 
@@ -37,8 +53,10 @@ def fit_temperature(y, probabilities):
 
 
 def reliability(y, probabilities, bins=10):
-    p = np.asarray(probabilities)
-    y = np.asarray(y)
+    p = validate_probabilities(probabilities)
+    y = validate_labels(y, p)
+    if isinstance(bins, bool) or not isinstance(bins, (int, np.integer)) or bins < 1:
+        raise ValueError("The number of reliability bins must be a positive integer")
     confidence = p.max(axis=1)
     correct = p.argmax(axis=1) == y
     index = np.minimum((confidence * bins).astype(int), bins - 1)
@@ -66,7 +84,11 @@ def wilson_lower(successes, total, z=1.959963984540054):
 
 def choose_review_policy(y, probabilities, min_accepted=200, target_lower_bound=0.95):
     """Choose maximum accepted coverage on the predeclared grid, or review all."""
-    y = np.asarray(y)
+    probabilities = validate_probabilities(probabilities)
+    y = validate_labels(y, probabilities)
+    if (isinstance(min_accepted, bool) or not isinstance(min_accepted, (int, np.integer))
+            or min_accepted < 1 or not 0 <= target_lower_bound <= 1):
+        raise ValueError("Review selection requires a positive accepted count and a bound between zero and one")
     confidence = probabilities.max(axis=1)
     correct = probabilities.argmax(axis=1) == y
     for step in range(37):
@@ -75,7 +97,7 @@ def choose_review_policy(y, probabilities, min_accepted=200, target_lower_bound=
         count = int(accepted.sum())
         successes = int(correct[accepted].sum())
         lower = wilson_lower(successes, count)
-        if count >= min_accepted and lower >= target_lower_bound:
+        if count >= min_accepted and lower is not None and lower >= target_lower_bound:
             return {"threshold": threshold, "review_all": False, "development_accepted": count,
                     "development_accepted_correct": successes, "development_wilson_lower": lower}
     return {"threshold": None, "review_all": True, "development_accepted": 0,
@@ -83,7 +105,10 @@ def choose_review_policy(y, probabilities, min_accepted=200, target_lower_bound=
 
 
 def review_summary(y, probabilities, policy):
-    y = np.asarray(y)
+    probabilities = validate_probabilities(probabilities)
+    y = validate_labels(y, probabilities)
+    if not policy["review_all"] and not 0 <= policy["threshold"] <= 1:
+        raise ValueError("The review threshold must be between zero and one")
     pred = probabilities.argmax(axis=1)
     accepted = np.zeros(len(y), dtype=bool) if policy["review_all"] else probabilities.max(axis=1) >= policy["threshold"]
     correct = pred == y

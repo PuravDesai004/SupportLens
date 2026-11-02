@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 import numpy as np
 
-from .calibration import temperature_scale
+from .calibration import temperature_scale, validate_labels, validate_probabilities
 from .config import ARTIFACT_DIR, REPORT_DIR, RUN_DIR
 from .data import sha256_file
 from .review_guard import compare_policy, review_masks, select_support_threshold, summarize_review
@@ -46,7 +46,13 @@ def checked_models():
         for name, digest in metadata["sha256"].items():
             if sha256_file(directory / name) != digest:
                 raise ValueError("Model files do not match the frozen v2 candidates")
-    if main["review_threshold"] != .75 or main["score_kind"] != "temperature":
+    policy = final["review_policy"]
+    if (main["review_threshold"] != policy["threshold"]
+            or main.get("review_all", False) != policy["review_all"]
+            or main["score_kind"] != final["score_kind"]
+            or main["temperature"] != final["temperature"]):
+        raise ValueError("Main score policy differs from the frozen v2 decision")
+    if policy["review_all"] or policy["threshold"] != .75 or final["score_kind"] != "temperature":
         raise ValueError("Unexpected v2 score policy")
     return main, guard
 
@@ -57,8 +63,13 @@ def load_predictions(path, main):
         raw_main = arrays["word_char_logistic"].copy()
         word = arrays["word_logistic"].copy()
         folds = arrays["fold_ids"].copy() if "fold_ids" in arrays.files else None
-    if raw_main.shape != word.shape or raw_main.shape != (len(y), main["output_dim"]):
+    if y.ndim != 1 or raw_main.shape != word.shape or raw_main.shape != (len(y), main["output_dim"]):
         raise ValueError("Saved predictions do not match the locked labels")
+    validate_labels(y, raw_main)
+    validate_probabilities(word)
+    if folds is not None and (folds.shape != y.shape or not np.issubdtype(folds.dtype, np.integer)
+                              or set(folds.tolist()) != {1, 2, 3}):
+        raise ValueError("Every development row must have a fold ID of 1, 2 or 3")
     return y, temperature_scale(raw_main, main["temperature"]), word, folds
 
 
@@ -107,8 +118,10 @@ def assessment():
     main, guard = checked_models()
     development_lock = read_json(OUTPUT / "development_lock.json")
     if (development_lock["main_artifact_sha256"] != main["sha256"]
-            or development_lock["guard_artifact_sha256"] != guard["sha256"]):
-        raise ValueError("Candidate artifacts changed after threshold selection")
+            or development_lock["guard_artifact_sha256"] != guard["sha256"]
+            or development_lock["main_temperature"] != main["temperature"]
+            or development_lock["main_threshold"] != main["review_threshold"]):
+        raise ValueError("Candidate artifacts or score policy changed after threshold selection")
     chosen = development_lock["selected"]
     source = V2_RUNS / "assessment_probabilities.npz"
     y, scores, word, _ = load_predictions(source, main)

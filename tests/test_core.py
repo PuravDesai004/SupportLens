@@ -12,7 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 from supportlens.config import VECTORIZER_CONFIG
 from supportlens.data import normalized, sha256_file, split_train_validation, validate_frame
 from supportlens.evaluate import sql_summary, summarize
-from supportlens.predict import load_active_bundle, load_bundle, predict
+from supportlens.predict import ArtifactError, load_active_bundle, load_bundle, predict
 from supportlens.torch_model import predict_probabilities, train_network
 
 
@@ -66,6 +66,51 @@ def test_saved_bundle_predicts_and_checks_inputs(tmp_path):
     (tmp_path / "model.joblib").write_bytes(b"tampered")
     with pytest.raises(ValueError, match="checksum"):
         load_bundle(tmp_path)
+
+
+@pytest.mark.parametrize("change, message", [
+    ({"sha256": {}}, "checksum"),
+    ({"sha256": {"vectorizer.joblib": "0" * 64, "model.joblib": "0" * 64,
+                 "../outside.joblib": "0" * 64}}, "checksum"),
+    ({"labels": ["card", "card"]}, "distinct"),
+    ({"review_threshold": float("nan")}, "threshold"),
+    ({"temperature": float("nan")}, "Temperature"),
+    ({"artifact_version": 3}, "requires its review guard"),
+])
+def test_invalid_bundle_metadata_is_rejected_before_deserialization(tmp_path, monkeypatch, change, message):
+    meta = {"model": "baseline", "input_dim": 2, "output_dim": 2, "labels": ["card", "transfer"],
+            "sklearn_version": sklearn.__version__, "review_threshold": .75,
+            "sha256": {"vectorizer.joblib": "0" * 64, "model.joblib": "0" * 64}}
+    meta.update(change)
+    (tmp_path / "metadata.json").write_text(json.dumps(meta), encoding="utf-8")
+
+    def must_not_load(*args, **kwargs):
+        pytest.fail("Invalid metadata reached artifact deserialization")
+
+    monkeypatch.setattr(joblib, "load", must_not_load)
+    with pytest.raises(ArtifactError, match=message):
+        load_bundle(tmp_path)
+
+
+@pytest.mark.parametrize("probabilities", [
+    [[1.2, -.2]], [[.8, .8]], [[float("nan"), .5]], [[.8, .2], [.8, .2]], [.8, .2],
+])
+def test_unscaled_predictions_reject_invalid_probability_output(probabilities):
+    class Vectorizer:
+        def transform(self, texts):
+            return texts
+
+    class Model:
+        def predict_proba(self, texts):
+            return probabilities
+
+    meta = {"model": "baseline", "labels": ["card", "transfer"], "temperature": 1.0,
+            "review_threshold": .75}
+    with pytest.raises(ArtifactError):
+        predict("A generic question", (Vectorizer(), Model(), meta))
+    with pytest.raises(ValueError) as error:
+        predict("", (Vectorizer(), Model(), meta))
+    assert not isinstance(error.value, ArtifactError)
 
 
 def test_review_threshold_temperature_and_release_pointer(tmp_path):

@@ -53,8 +53,9 @@ def main(allow_rerun=False):
         previous = json.loads(metrics_path.read_text(encoding="utf-8"))
     selection = json.loads((REPORT_DIR / "selection.json").read_text(encoding="utf-8"))
     labels = json.loads((RUN_DIR / "labels.json").read_text(encoding="utf-8"))
-    if sha256_file(DATA_DIR / "test.csv") != DATA_SHA256["test.csv"]:
-        raise ValueError("Official test CSV checksum does not match pinned source")
+    for name in ("train.csv", "test.csv"):
+        if sha256_file(DATA_DIR / name) != DATA_SHA256[name]:
+            raise ValueError(f"Official {name} checksum does not match pinned source")
     official_train = load_data(DATA_DIR / "train.csv", labels)
     test = load_data(DATA_DIR / "test.csv", labels)
     if set(test.category) != set(labels):

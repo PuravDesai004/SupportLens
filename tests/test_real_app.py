@@ -1,6 +1,7 @@
 from pathlib import Path
 import hashlib
 import json
+import shutil
 
 import numpy as np
 import pandas as pd
@@ -73,6 +74,37 @@ def test_streamlit_app_real_artifact_and_invalid_input():
     app.button[0].click().run()
     assert not app.exception
     assert any("second model" in warning.value.lower() and "high" in warning.value.lower() for warning in app.warning)
+
+
+def test_streamlit_reload_uses_new_release_and_handles_broken_artifacts(tmp_path):
+    shutil.copyfile(ROOT / "app.py", tmp_path / "app.py")
+    artifacts = tmp_path / "artifacts"
+    for release in ("v2", "v3"):
+        shutil.copytree(ROOT / "artifacts" / release, artifacts / release)
+
+    def activate(release):
+        digest = hashlib.sha256((artifacts / release / "metadata.json").read_bytes()).hexdigest()
+        (artifacts / "active.json").write_text(
+            json.dumps({"release": release, "metadata_sha256": digest}), encoding="utf-8")
+
+    activate("v2")
+    app = AppTest.from_file(str(tmp_path / "app.py"), default_timeout=30).run()
+    app.text_area[0].set_value("My replacement card has not arrived yet.")
+    app.button[0].click().run()
+    assert not app.exception and app.metric
+    assert not any("second model" in warning.value.lower() for warning in app.warning)
+    previous_score = next(metric.value for metric in app.metric if metric.label == "Model score")
+
+    activate("v3")
+    app.button[0].click().run()
+    assert not app.exception
+    assert next(metric.value for metric in app.metric if metric.label == "Model score") == previous_score
+    assert any("second model" in warning.value.lower() for warning in app.warning)
+
+    (artifacts / "active.json").write_text("{broken json", encoding="utf-8")
+    app.button[0].click().run()
+    assert not app.exception and not app.metric
+    assert any("model files are missing or incompatible" in error.value.lower() for error in app.error)
 
 
 def test_shipped_evaluation_reconciles_with_recorded_evidence():

@@ -1,7 +1,6 @@
 """Inspect v1's original validation errors; public dataset examples only."""
 import json
 from collections import Counter
-from pathlib import Path
 
 import numpy as np
 
@@ -11,6 +10,9 @@ from supportlens.predict import load_bundle
 
 
 def main():
+    output = ROOT / "reports" / "experiment_v2" / "baseline_error_audit.json"
+    if output.exists():
+        raise FileExistsError("Refusing to overwrite the historical v1 error audit")
     train_path = DATA_DIR / "train.csv"
     if sha256_file(train_path) != DATA_SHA256["train.csv"]:
         raise ValueError("Unexpected training data checksum")
@@ -33,9 +35,9 @@ def main():
               "common_confusions": [{"true_label": t, "predicted_label": p, "count": n}
                                     for (t, p), n in pairs.most_common(20)],
               "representative_public_data_mistakes": examples}
-    out = ROOT / "reports" / "experiment_v2"
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "baseline_error_audit.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("x", encoding="utf-8") as report:
+        report.write(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2))
 
 

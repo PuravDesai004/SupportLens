@@ -379,8 +379,10 @@ def test_stage():
     vectorizer, model, meta = load_bundle(ROOT / "artifacts" / "previous_v1")
     if meta["labels"] != labels:
         raise ValueError("Previous v1 labels do not match")
-    old = model.predict_proba(vectorizer.transform(test.text))
-    output_models["previous_v1"], per_class = report_metrics(y, old, labels, {"threshold": .35, "review_all": False})
+    x = vectorizer.transform(test.text)
+    old = predict_probabilities(model, x) if meta["model"] == "torch" else model.predict_proba(x)
+    output_models["previous_v1"], per_class = report_metrics(
+        y, old, labels, {"threshold": meta["review_threshold"], "review_all": meta.get("review_all", False)})
     save_per_class("previously_viewed_test", "previous_v1", per_class)
     save_json(output, {"created_at_utc": datetime.now(timezone.utc).isoformat(), "examples": len(test),
                        "scope": "Full official test; previously viewed in v1. Exploratory comparison only.",

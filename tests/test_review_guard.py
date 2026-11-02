@@ -26,6 +26,26 @@ def test_support_is_for_the_main_label_not_the_second_models_favorite():
         review_masks(main, np.array([[.2, .3, .5]]), .75, .3)
 
 
+def test_policy_comparison_rejects_broadcast_labels_and_empty_predictions():
+    main = np.array([[.9, .1], [.8, .2]])
+    with pytest.raises(ValueError, match="Labels"):
+        compare_policy(np.array([[0], [1]]), main, main, .75, .4)
+    with pytest.raises(ValueError):
+        review_masks(np.empty((0, 2)), np.empty((0, 2)), .75, .4)
+
+
+@pytest.mark.parametrize("folds", [np.array([1, 2, 0]), np.array([1., 2., 3.]), np.array([[1], [2], [3]])])
+def test_saved_predictions_reject_invalid_fold_assignments(tmp_path, folds):
+    from supportlens.review_guard_experiment import load_predictions
+
+    path = tmp_path / "predictions.npz"
+    probabilities = np.tile([.9, .1], (3, 1))
+    np.savez(path, y=np.array([0, 0, 0]), word_char_logistic=probabilities,
+             word_logistic=probabilities, fold_ids=folds)
+    with pytest.raises(ValueError, match="fold ID"):
+        load_predictions(path, {"output_dim": 2, "temperature": 1.0})
+
+
 def test_development_selection_obeys_review_budget_and_catches_errors():
     # Main predicts class 0 throughout. Low word support identifies most wrong rows.
     main = np.tile([.9, .1], (100, 1))

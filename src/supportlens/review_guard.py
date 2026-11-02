@@ -1,6 +1,6 @@
 """A general second-view review signal; it never changes the predicted label."""
 import numpy as np
-from .calibration import wilson_lower
+from .calibration import validate_labels, validate_probabilities, wilson_lower
 
 
 def review_masks(main_probabilities, word_probabilities, main_threshold, support_threshold):
@@ -9,10 +9,8 @@ def review_masks(main_probabilities, word_probabilities, main_threshold, support
     word = np.asarray(word_probabilities, dtype=np.float64)
     if main.ndim != 2 or main.shape != word.shape or main.shape[1] < 2:
         raise ValueError("Both models must return the same two-dimensional class ordering")
-    for probabilities in (main, word):
-        if (not np.isfinite(probabilities).all() or (probabilities < 0).any()
-                or not np.allclose(probabilities.sum(axis=1), 1.0, atol=1e-5)):
-            raise ValueError("Both models must return valid probability rows")
+    validate_probabilities(main)
+    validate_probabilities(word)
     if not (0 <= main_threshold <= 1 and 0 <= support_threshold <= 1):
         raise ValueError("Review thresholds must be between zero and one")
     top = main.argmax(axis=1)
@@ -41,9 +39,10 @@ def summarize_review(y, predictions, review):
 
 def compare_policy(y, main_probabilities, word_probabilities, main_threshold, support_threshold):
     masks = review_masks(main_probabilities, word_probabilities, main_threshold, support_threshold)
+    y = validate_labels(y, np.asarray(main_probabilities))
     old = masks["low_main"]
     new = masks["review"]
-    correct = masks["top"] == np.asarray(y)
+    correct = masks["top"] == y
     extra = new & ~old
     return {"existing": summarize_review(y, masks["top"], old),
             "guarded": summarize_review(y, masks["top"], new),

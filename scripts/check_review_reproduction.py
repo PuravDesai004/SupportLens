@@ -23,10 +23,12 @@ def main():
     x, y = read(original / "assessment_export.json"), read(replay / "assessment_export.json")
     checks = {"same_cutoff": a["selected_before_assessment"] == b["selected_before_assessment"],
               "same_assessment_comparison": a["comparison"] == b["comparison"],
-              "same_export_sha256": x["csv_sha256"] == y["csv_sha256"],
+              "same_export_sha256": (sha256_file(original / "assessment_comparison.csv") == x["csv_sha256"]
+                                      == sha256_file(replay / "assessment_comparison.csv") == y["csv_sha256"]),
               "same_v3_metadata_sha256": sha256_file(ROOT / "artifacts" / "v3" / "metadata.json")
               == sha256_file(args.output_root / "artifacts" / "v3" / "metadata.json"),
-              "test_rescored": b["test_set_rescored"]}
+              "test_rescored": (b["test_set_rescored"]
+                                  or (args.output_root / "reports" / "experiment_v2" / "previously_viewed_test.json").exists())}
     if not all(checks[k] for k in ("same_cutoff", "same_assessment_comparison", "same_export_sha256", "same_v3_metadata_sha256")) or checks["test_rescored"]:
         raise AssertionError("Review reproduction did not match, or the official test was rescored")
     report = {"checked_at_utc": datetime.now(timezone.utc).isoformat(),

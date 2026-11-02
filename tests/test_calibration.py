@@ -24,6 +24,26 @@ def test_temperature_fit_reduces_in_sample_log_loss():
     assert multiclass_log_loss(y, temperature_scale(p, temperature)) <= multiclass_log_loss(y, p)
 
 
+@pytest.mark.parametrize("labels", [np.array([[0], [1]]), np.array([.9, 1.0]), np.array([0, 2])])
+def test_metrics_reject_broadcast_or_truncated_class_labels(labels):
+    p = np.array([[.8, .2], [.2, .8]])
+    policy = {"threshold": .75, "review_all": False}
+    for calculate in (multiclass_log_loss, reliability, choose_review_policy):
+        with pytest.raises(ValueError, match="Labels"):
+            calculate(labels, p)
+    with pytest.raises(ValueError, match="Labels"):
+        review_summary(labels, p, policy)
+
+
+def test_calibration_rejects_empty_rows_and_invalid_selection_settings():
+    with pytest.raises(ValueError):
+        temperature_scale(np.empty((0, 2)), 1)
+    with pytest.raises(ValueError):
+        reliability([0], [[.9, .1]], bins=0)
+    with pytest.raises(ValueError):
+        choose_review_policy([0], [[.9, .1]], min_accepted=0)
+
+
 def test_review_policy_and_reliability_have_correct_denominators():
     p = np.array([[.9, .1], [.8, .2], [.7, .3], [.2, .8]])
     y = np.array([0, 1, 0, 1])

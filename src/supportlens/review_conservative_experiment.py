@@ -51,8 +51,10 @@ def assessment():
         raise FileExistsError("Conservative assessment decision is already locked")
     main, guard = checked_models()
     lock = read_json(OUTPUT / "conservative_development_lock.json")
-    if lock["main_artifact_sha256"] != main["sha256"] or lock["guard_artifact_sha256"] != guard["sha256"]:
-        raise ValueError("Candidate artifacts changed after threshold selection")
+    if (lock["main_artifact_sha256"] != main["sha256"] or lock["guard_artifact_sha256"] != guard["sha256"]
+            or lock["main_temperature"] != main["temperature"]
+            or lock["main_threshold"] != main["review_threshold"]):
+        raise ValueError("Candidate artifacts or score policy changed after threshold selection")
     source = V2_RUNS / "assessment_probabilities.npz"
     y, scores, word, _ = load_predictions(source, main)
     if len(y) != 2002:

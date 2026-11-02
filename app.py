@@ -7,7 +7,7 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
-from supportlens.predict import load_active_bundle, predict  # noqa: E402
+from supportlens.predict import ArtifactError, load_active_bundle, predict  # noqa: E402
 
 st.set_page_config(page_title="SupportLens", page_icon="🔎", layout="centered")
 st.markdown("""
@@ -41,8 +41,16 @@ question = st.text_area("Support question", value=samples[sample], height=125,
 
 
 @st.cache_resource
-def cached_bundle():
+def cached_bundle(release_signature):
+    """Changing the release pointer invalidates the cached model."""
     return load_active_bundle(ROOT / "artifacts")
+
+
+def current_bundle():
+    directory = ROOT / "artifacts"
+    pointer = directory / "active.json"
+    signature_path = pointer if pointer.exists() else directory / "metadata.json"
+    return cached_bundle((signature_path.name, signature_path.read_bytes()))
 
 
 def readable(label):
@@ -51,8 +59,10 @@ def readable(label):
 
 if st.button("Predict intent", type="primary"):
     try:
-        bundle = cached_bundle()
+        bundle = current_bundle()
         result = predict(question, bundle)
+    except ArtifactError:
+        st.error("The model files are missing or incompatible. Follow the setup instructions in the README.")
     except ValueError as exc:
         st.warning(str(exc))
     except (OSError, KeyError, ImportError) as exc:
@@ -83,7 +93,7 @@ if st.button("Predict intent", type="primary"):
 
 with st.expander("About the model and evaluation"):
     try:
-        meta = cached_bundle()[2]
+        meta = current_bundle()[2]
         if meta.get("artifact_version") in (2, 3):
             locked = json.loads((ROOT / "reports" / "experiment_v2" / "final_lock.json").read_text(encoding="utf-8"))
             if locked["selected_release"] != meta["candidate_id"]:
