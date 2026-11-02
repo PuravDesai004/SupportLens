@@ -1,0 +1,151 @@
+{
+  "checked_at_utc": "2026-11-02T18:41:10.323659+00:00",
+  "metrics": {
+    "word_char_logistic": {
+      "assessment": {
+        "accuracy": {
+          "original": 0.9010989010989011,
+          "reproduced": 0.9010989010989011
+        },
+        "ece_10_bins": {
+          "original": 0.19667607432894063,
+          "reproduced": 0.19667607432894063
+        },
+        "log_loss": {
+          "original": 0.5799601059410459,
+          "reproduced": 0.5799601059410459
+        },
+        "macro_f1": {
+          "original": 0.9006840513031299,
+          "reproduced": 0.9006840513031299
+        },
+        "top3_accuracy": {
+          "original": 0.9725274725274725,
+          "reproduced": 0.9725274725274725
+        }
+      },
+      "development": {
+        "accuracy": {
+          "original": 0.8753905761779778,
+          "reproduced": 0.8753905761779778
+        },
+        "ece_10_bins": {
+          "original": 0.24063103430895613,
+          "reproduced": 0.24063103430895613
+        },
+        "log_loss": {
+          "original": 0.7281571484098215,
+          "reproduced": 0.7281571484098215
+        },
+        "macro_f1": {
+          "original": 0.8734235738785596,
+          "reproduced": 0.8734235738785596
+        },
+        "top3_accuracy": {
+          "original": 0.9623797025371829,
+          "reproduced": 0.9623797025371829
+        }
+      }
+    },
+    "word_logistic": {
+      "assessment": {
+        "accuracy": {
+          "original": 0.8751248751248751,
+          "reproduced": 0.8751248751248751
+        },
+        "ece_10_bins": {
+          "original": 0.2597815516775182,
+          "reproduced": 0.2597815516775182
+        },
+        "log_loss": {
+          "original": 0.7631163110761792,
+          "reproduced": 0.7631163110761792
+        },
+        "macro_f1": {
+          "original": 0.8735478468541429,
+          "reproduced": 0.8735478468541429
+        },
+        "top3_accuracy": {
+          "original": 0.9660339660339661,
+          "reproduced": 0.9660339660339661
+        }
+      },
+      "development": {
+        "accuracy": {
+          "original": 0.8503937007874016,
+          "reproduced": 0.8503937007874016
+        },
+        "ece_10_bins": {
+          "original": 0.3119711519699221,
+          "reproduced": 0.3119711519699221
+        },
+        "log_loss": {
+          "original": 0.9577930367746507,
+          "reproduced": 0.9577930367746507
+        },
+        "macro_f1": {
+          "original": 0.8472232748924404,
+          "reproduced": 0.8472232748924404
+        },
+        "top3_accuracy": {
+          "original": 0.9491313585801775,
+          "reproduced": 0.9491313585801775
+        }
+      }
+    },
+    "word_torch": {
+      "assessment": {
+        "accuracy": {
+          "original": 0.8801198801198801,
+          "reproduced": 0.8801198801198801
+        },
+        "ece_10_bins": {
+          "original": 0.03593434184998062,
+          "reproduced": 0.03593434184998062
+        },
+        "log_loss": {
+          "original": 0.4314763182432285,
+          "reproduced": 0.4314763182432285
+        },
+        "macro_f1": {
+          "original": 0.8776224162223265,
+          "reproduced": 0.8776224162223265
+        },
+        "top3_accuracy": {
+          "original": 0.9675324675324676,
+          "reproduced": 0.9675324675324676
+        }
+      },
+      "development": {
+        "accuracy": {
+          "original": 0.8586426696662918,
+          "reproduced": 0.8586426696662918
+        },
+        "ece_10_bins": {
+          "original": 0.07752320285080566,
+          "reproduced": 0.07752320285080566
+        },
+        "log_loss": {
+          "original": 0.54350793465877,
+          "reproduced": 0.54350793465877
+        },
+        "macro_f1": {
+          "original": 0.857060582799593,
+          "reproduced": 0.857060582799593
+        },
+        "top3_accuracy": {
+          "original": 0.9568803899512561,
+          "reproduced": 0.9568803899512561
+        }
+      }
+    }
+  },
+  "same_assignment_hash": true,
+  "same_candidate_artifact_hashes": true,
+  "same_raw_metrics": true,
+  "same_review_policy": true,
+  "same_selected_release": true,
+  "same_temperatures": true,
+  "scope": "Same data and seeds, separate output root; reproduction is not an independent evaluation.",
+  "test_rescored": false
+}

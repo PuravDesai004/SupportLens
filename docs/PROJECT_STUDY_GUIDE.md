@@ -1,77 +1,70 @@
-# SupportLens study guide
+# SupportLens study guide: the current system
 
-This guide describes the files and measured run in this repository. It is designed to be read without the original coding session. The project was built with coding-agent assistance; in an interview, explain the design and what you understand rather than claiming to have typed every line yourself.
+This guide is a self-contained explanation of the code and measured v2 run. SupportLens was built with coding-agent assistance; explain what you understand rather than claiming to have typed every line. The original [v1 study guide](PROJECT_STUDY_GUIDE_V1.md), its reports and its model files are preserved as historical evidence.
 
-## 1. The story
+## 1. The story and a one-minute explanation
 
-Imagine a support agent reading a question such as “Where is my new card?” A useful first step might be to suggest a category, such as `card_arrival`, for a person to review. SupportLens demonstrates that narrow classification problem using published research data. It does **not** connect to a bank, answer the question, access accounts, route a ticket, or demonstrate a business saving. The intended user is a learner or reviewer exploring an ML workflow, not a bank customer seeking service.
+A support agent might read an English banking question and need to identify its topic. SupportLens demonstrates a model that **suggests** one of 77 research-data intent labels. It offers alternatives and a review indication. It does not connect to a bank, answer the question, access accounts, or operate a real queue.
 
-## 2. A one-minute explanation
+An interview-sized explanation:
 
-“I built a small intent-classification demo around the public BANKING77 dataset. I kept the official test split separate, grouped normalized duplicate texts when making a validation split, and fit a TF-IDF vocabulary only on the derived training rows. I compared logistic regression with a small PyTorch network using validation macro F1. Logistic regression narrowly won validation, so I saved it with its vectorizer and label mapping. I then evaluated both fixed candidates on the official test and built a Streamlit interface with a review flag. The model is a research-data demo; its scores are not guaranteed probabilities or a reliable out-of-scope detector.”
+> I started with a TF-IDF and logistic-regression baseline on BANKING77. To test an improvement fairly, I grouped normalized duplicate questions, retrained the baseline and two candidates on the same development folds, and fit text features inside each fold. A word-plus-character logistic model led on macro F1, then passed a predeclared assessment gate. I fitted a single temperature using out-of-fold predictions and chose a review threshold from development data. I packaged the matching model, vectorizer and labels for a local Streamlit app. The old test was already viewed, so I label a later comparison exploratory and do not treat confidence as a guarantee.
 
-## 3. End-to-end flow
+## 2. Follow the actual flow
 
 ```text
-TRAINING: public train CSV -> validate -> group split -> fit TF-IDF on train
-          -> fit both models -> validation comparison -> save selected files
-TEST:     public test CSV -> saved TF-IDF -> both fixed models -> metrics + CSV
-APP:      typed question -> saved TF-IDF -> selected model -> category + score
+Public training CSV -> grouped development / assessment split
+  -> 3 group-aware development folds -> fit features inside each fold
+  -> compare baseline, word+character logistic, and PyTorch
+  -> fit temperature and review policies using out-of-fold scores
+  -> lock candidate -> retrain all on development -> assessment release gate
+  -> freeze release -> one exploratory comparison on previously viewed test
+
+Visitor text -> active release pointer -> saved word+character TF-IDF
+  -> logistic probabilities -> temperature scaling -> top intents + review flag
 ```
 
-Read `src/supportlens/data.py`, then `train.py`, `torch_model.py`, `evaluate.py`, `predict.py`, and finally `app.py`. `config.py` holds the seed and configuration. During inference a question is transformed by the saved vectorizer; the model produces one score per known intent, and `metadata.json` translates the highest-scoring index back to a label.
+The important files are `src/supportlens/data.py` (data validation and grouping), `experiment_v2.py` (staged experiment), `torch_model.py` (network), `calibration.py` (temperature and review policy), `promote_v2.py` (locked release), `predict.py` (inference), and `app.py` (interface). `docs/EXPERIMENT_PLAN.md` was committed before the comparison; `reports/experiment_v2/` holds the measured evidence.
 
-## 4. Dataset and split
+## 3. Dataset, splits and exposure
 
-The source is [BANKING77 by PolyAI](https://huggingface.co/datasets/PolyAI/banking77), cited as Casanueva et al., [*Efficient Intent Detection with Dual Sentence Encoders*](https://arxiv.org/abs/2003.04807) (2020). The dataset card lists [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). We use the source CSVs at revision `9d081458ff52e53cf7e848f414e6e9344e4e6696`, containing `text` and `category`. The actual run found:
+The data is [BANKING77 by PolyAI](https://huggingface.co/datasets/PolyAI/banking77), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Cite Casanueva, Temčinas, Gerz, Henderson and Vulić, [*Efficient Intent Detection with Dual Sentence Encoders*](https://arxiv.org/abs/2003.04807), 2020. The pinned original CSVs contain `text` and `category`; their hashes and per-label counts are in `reports/data_manifest.json`.
 
-| Split | Rows | Labels | Notes |
-| --- | ---: | ---: | --- |
-| Official train | 10,003 | 77 | 35–187 examples per label |
-| Derived train | 8,002 | 77 | Used to fit vocabulary and models |
-| Validation | 2,001 | 77 | Used to select the model; 4–40 per label |
-| Official test | 3,080 | 77 | 40 per label; used after selection |
+| Data | Rows | Use |
+| --- | ---: | --- |
+| Official training file | 10,003 | Source for the experiment's development and assessment |
+| V2 development pool | 8,001 | Three group-aware folds; model and threshold candidates |
+| V2 development assessment | 2,002 | Fit no model or vocabulary on these rows; predeclared release gate |
+| Official test | 3,080 | Previously viewed in v1; one v2 post-lock exploratory comparison |
 
-The derived split is the first fold of a shuffled five-fold `StratifiedGroupKFold`, seed 42. Its groups are text after case-folding and whitespace normalization, so identical groups stay together; the split has zero shared normalized texts between derived train and validation. Source label spellings are preserved, including `Refund_not_showing_up` and `reverted_card_payment?`.
+All sets cover the same 77 labels. The assessment split is the first fold of a five-fold `StratifiedGroupKFold` with seed 73; the development folds use seed 137. Group keys are case-folded text with normalized whitespace. No group crosses a relevant split. Each development row receives one prediction from a model that did not fit that row or its normalized group.
 
-The official train and test contain seven overlapping normalized texts, with matching labels: six in derived train and one in validation. No exact string is shared. Familiar wording can make official test performance somewhat optimistic. The primary score still uses all 3,080 official test examples. The data does not tell us real support volume, arrival times, handling costs, or outcomes. Full label distributions, duplicate checks, source URLs, hashes, and versions are in `reports/data_manifest.json`.
+The assessment influences whether a candidate is released and whether its precomputed raw or temperature policy is used, so it is part of the overall development process—not a pristine final test. The official test was already observed during v1. Six v2 development texts and one assessment text overlap with official test texts after normalization; their labels agree. A new split improves this comparison's fairness but does not erase earlier exposure or these overlaps.
 
-## 5. TF-IDF and leakage
+## 4. Word and character TF-IDF
 
-The vocabulary is a list of terms learned from the derived training text. A sparse row records weights only for terms that occur in one question; most of its 6,000 entries are zero. TF-IDF combines how often a term occurs in a document with how uncommon it is across training documents. The code uses unigrams and bigrams, `min_df=2`, `max_features=6000`, sublinear term frequency, scikit-learn's default normalization, and float32 features.
+A vocabulary is learned from training text. TF-IDF gives a weight to a term based on its frequency in a question and its frequency across the fitted corpus. Most features in one row are zero, so the representation is **sparse**.
 
-**Illustration, not a measured row:** suppose training questions contain “card late” and “card arrived.” A vocabulary could include `card`, `late`, `arrived`, `card late`, and `card arrived`. A question containing `late` gets a nonzero weight for that term; a word appearing in almost every training question tends to carry less distinguishing weight. The exact weights depend on the fitted corpus and normalization.
+The current model concatenates:
 
-Fitting the vocabulary on validation or test text would let information about those sets influence features, even without labels. The code calls `fit_transform` on train and only `transform` on validation and test. A fixture test checks that a token seen only in validation does not enter the vocabulary.
+- Up to 6,000 word unigrams and bigrams, `min_df=2`, sublinear term frequency.
+- Up to 18,000 character-within-word 3–5-grams, with the same `min_df` and sublinear setting. The character block has weight 0.7.
 
-## 6. The logistic regression baseline
+The actual release learned 6,000 word and 12,738 character features: **18,738 columns**. For illustration, a word such as `cards` can contribute fragments like `car`, `ard`, and `rds`. Similar spellings may share fragments even when an entire word or phrase differs. This is not the model understanding the meaning of every phrase.
 
-Despite its name, multiclass logistic regression is a classifier. It learns a weight vector for each label and calculates class scores from the TF-IDF row. Its `predict_proba` returns one value per class, with the largest mapped to the proposed intent. This is a useful baseline because sparse text features work naturally with a linear model, it trains quickly, and the decision rule is easier to explain than a deep network.
+In `experiment_v2.make_vectorizer`, `FeatureUnion` joins the word and character transformers. `fit_candidate` calls `fit_transform` only on the fold's training text; `probabilities_for` calls `transform` on the held-out text. Fitting vocabulary or IDF on held-out examples would leak information. The tests include a token that appears only in validation and check it never enters either fitted vocabulary.
 
-The recorded model used `C=4.0`, `solver="lbfgs"`, `max_iter=500`, and converged in 45 iterations without a recorded convergence warning. Larger `C` means weaker regularization; it does not mean “confidence.” The deployed model is trained on the derived train subset, not retrained on validation after selection, so its reported evaluation corresponds to the saved artifact.
+## 5. Logistic regression and its baseline
 
-## 7. PyTorch foundations
+Multiclass logistic regression learns a coefficient vector for each label. It combines a sparse TF-IDF row with those coefficients, then outputs one probability-like value per class. V2 used `C=4`, `lbfgs`, and at most 500 iterations; its full development fit converged in 32 iterations without a recorded convergence warning. Larger `C` means weaker regularization, not higher confidence.
 
-- A **tensor** is a typed array. Each batch of features becomes a float32 tensor of shape `[batch, 6000]`; target class IDs are `torch.long` with shape `[batch]`.
-- `IntentNet` has `Linear(6000, 64)`, `ReLU`, and `Linear(64, 77)`. The result has shape `[batch, 77]` and contains raw **logits**, not probabilities.
-- `CrossEntropyLoss` compares logits with integer target IDs. It incorporates the relevant log-softmax operation; do not apply softmax first for this loss.
-- A **forward pass** computes logits and loss. `loss.backward()` computes gradients. `optimizer.step()` changes weights using Adam; `zero_grad()` clears old gradients first.
-- A **batch** is a subset of examples; an **epoch** visits the derived training rows once. The run used batches up to 128, 10 epochs, Adam at learning rate 0.003, CPU, and a 64-unit hidden layer. It densifies only one sparse batch at a time.
-- At inference, softmax turns logits into scores summing to one. Those values still need calibration evidence before treating them as reliable probabilities.
+The comparison baseline used the **same v1 configuration**—word unigrams/bigrams, 6,000 features and logistic regression—but was retrained in every v2 fold and on the v2 development pool. The original deployed v1 artifact might have trained on some v2 assessment examples, so using that old artifact as the assessment comparator would be unfair. The original artifact is still saved in `artifacts/previous_v1/` for historical and illustrative comparisons.
 
-## 8. Walk through real training code
+## 6. PyTorch foundations
 
-In `train.py` (comments added here for explanation), the split is already made before fitting features:
+The comparison also retrained the original CPU network. Its input is a float32 tensor `[batch, 6000]`; its targets are integer `torch.long` class IDs of shape `[batch]`. The network is `Linear(6000, 64) -> ReLU -> Linear(64, 77)`. Its output contains **raw logits**. `CrossEntropyLoss` handles log-softmax internally; do not apply softmax before this loss.
 
-```python
-vectorizer = TfidfVectorizer(**VECTORIZER_CONFIG, dtype=np.float32)
-x_train = vectorizer.fit_transform(derived_train.text)
-x_val = vectorizer.transform(validation.text)
-```
-
-The first line creates the configured transformer. The second learns vocabulary and inverse-document-frequency weights from 8,002 training questions and produces an `8002 x 6000` sparse matrix. The third reuses those learned weights for 2,001 validation questions; it does not refit.
-
-In `torch_model.py`, the essential update is:
+In `torch_model.py`, one training update is:
 
 ```python
 inputs = torch.from_numpy(x[ids].toarray().astype(np.float32, copy=False))
@@ -83,88 +76,99 @@ loss.backward()
 optimizer.step()
 ```
 
-Only the indexed batch is converted to dense input. The class IDs must be integers, not one-hot vectors. `model(inputs)` calls the two linear layers and ReLU; loss compares every row's 77 logits against the corresponding class ID. Backpropagation computes gradients, and Adam updates the parameters. The saved training loss fell from about 4.0175 in epoch 1 to 0.0558 in epoch 10. That is **training loss**, not proof that the model generalizes.
+Only one sparse batch is converted to dense data. The forward pass calculates logits and loss, backpropagation calculates gradients, and Adam updates weights. The run used up to 128 examples per batch, 10 epochs, learning rate 0.003 and a fixed seed. Softmax is applied at inference. The PyTorch candidate is useful to study, but it did not win this v2 comparison and is not required to run the active app.
 
-`train.py` compares validation scores and writes `reports/selection.json`; `evaluate.py` is a separate command run afterward. Candidate training files are kept locally in ignored `training_runs/`; only the selected model, vectorizer and metadata are needed for the app.
+## 7. Comparing classification quality
 
-## 9. Evaluation and the measured result
+Accuracy is correct predictions divided by all examples. Precision for a label asks how many predictions of that label were correct; recall asks how many actual examples of that label were found. F1 combines precision and recall. **Macro F1** gives each label equal weight. Top-3 accuracy asks whether the true label appears among the model's three highest-ranked labels.
 
-Accuracy is correct predictions divided by examples. For each class, precision asks “of predictions of this class, how many were correct?” and recall asks “of examples truly in this class, how many were found?” F1 is the harmonic mean of precision and recall. **Macro F1** averages the per-class F1 values equally, so a common label does not dominate the comparison. The per-class CSVs include support, the number of true examples for each class.
+| Candidate | Development OOF accuracy / macro F1 | Assessment accuracy / macro F1 | Assessment top-3 |
+| --- | --- | --- | --- |
+| Word logistic | 85.04% / 0.8472 | 87.51% / 0.8736 | 96.60% |
+| Word + character logistic | **87.54% / 0.8734** | **90.11% / 0.9007** | **97.25%** |
+| Word + PyTorch | 85.86% / 0.8571 | 88.01% / 0.8776 | 96.75% |
 
-| Model | Validation accuracy | Validation macro F1 | Test accuracy | Test macro F1 |
-| --- | ---: | ---: | ---: | ---: |
-| Logistic regression | 87.96% | 0.8767 | 87.60% | 0.8761 |
-| PyTorch | 87.86% | 0.8733 | 88.73% | 0.8878 |
+Development metrics pool 8,001 out-of-fold predictions; assessment has 2,002 examples. The word+character model beat the matched baseline in all three development folds. The pooled development macro-F1 gain was 0.0262, with an approximate paired bootstrap interval [0.0216, 0.0312]. Its assessment gain was 0.0271, with an approximate interval [0.0172, 0.0379]. The intervals are descriptive: row resampling does not account for all shared training-fold dependence or earlier data exposure.
 
-Validation uses 2,001 rows; test uses the same 3,080 official test rows for both models. The predeclared rule selected the higher validation macro F1; an exact tie would select the simpler baseline. Therefore the baseline remains selected even though PyTorch scores higher on test. Choosing again after seeing test scores would make the test part of selection. There were no convergence warnings in the baseline run. `reports/selection.json` and `reports/metrics.json` record the decision and results.
+Selection rules were recorded before fitting: a candidate needed a meaningful development gain and a positive paired bootstrap lower bound, then had to pass the assessment gate. The gate used the matched baseline retrained without assessment data. The candidate and threshold were frozen before the previously viewed test comparison.
 
-For the selected baseline, `score < 0.35` means “review recommended.” This threshold was fixed before test scoring. Of 3,080 test examples, 624 (20.26%) were flagged. Of the 2,456 not flagged, 2,332 were correct, or 94.95%. Those denominators matter; the app does not claim every accepted prediction is correct. The code returns `null` for accuracy among accepted examples if there are none. A high score can still be wrong or assigned to an out-of-scope input.
+On that **previously viewed** 3,080-row test, the original v1 artifact scored 87.60% accuracy / 0.8761 macro F1 and v2 scored 89.84% / 0.8987. These are exploratory results on a set already seen in the project, not a new independent estimate. Per-class CSVs and common confusion pairs are in `reports/experiment_v2/`. For example, the selected model confused `card_arrival` with `card_delivery_estimate` four times on the assessment; similar labels and incomplete wording make this difficult.
 
-An example confusion in this run: seven test examples labeled `wrong_exchange_rate_for_cash_withdrawal` were predicted as `card_payment_wrong_exchange_rate`. That suggests a useful error-analysis question, not a claim about real ticket frequency. The first test evaluation is recorded as not previously viewed; future reproductions have already-seen test results and should be described that way.
+## 8. Confidence, calibration and review
 
-## 10. Artifacts, app, and deployment
+A model's largest output is a **score**, not automatically a calibrated probability. If many predictions assigned a score near 0.8 are correct about 80% of the time, those predictions are better calibrated for that population. **Log loss** penalizes assigning low probability to the true label; lower is better. The reported **10-bin expected calibration error (ECE)** compares average confidence and observed accuracy in score bins; its value depends on the binning and sample.
 
-`artifacts/vectorizer.joblib`, `artifacts/model.joblib`, and `artifacts/metadata.json` belong together. Metadata records 77 sorted labels, 6,000 input features, model type, review threshold, version, and checksums. `predict.load_bundle` checks compatibility and hashes before loading the trusted joblib files. A hash mismatch or missing file yields an error; it does not make up an answer. Checksums alone do not make an untrusted pickle safe.
+`calibration.fit_temperature` chooses one positive scalar using only development out-of-fold scores and labels. `temperature_scale` applies:
 
-Streamlit caches the bundle and applies it to the question. The app offers sample questions, rejects empty and very long inputs, shows top alternatives and limitations, and requests that visitors omit sensitive information. It does not print or save visitor text in its own code. The owner requested a local-only demo, so no public app was deployed. A future public host may retain logs, and a public demo would not prove production infrastructure or an integration with a bank.
+```text
+scaled probabilities = softmax(log(raw probabilities) / temperature)
+```
 
-## 11. Testing and CI
+The selected scalar is approximately 0.51738. Values below 1 sharpen the distribution; values above 1 soften it. The same positive scaling is applied to every class, so the ranking does not change. On the separate assessment, v2's log loss went from 0.5800 to 0.3749 and ECE from 0.1967 to 0.0207. Calibration measured on the same out-of-fold predictions used to fit the scalar may look optimistic; the assessment is a separate check, though it also informs the release gate. Neither proves calibration for real bank traffic.
 
-Install `requirements-dev.txt`, then run `python -m pytest -q`. Tests cover bad data, a validation-only token, deterministic grouping, label order, artifact reload and tampering, input and review behavior, understandable toy metrics, DuckDB reconciliation, a tiny CPU PyTorch training run, and the real packaged model through Streamlit `AppTest`.
+The development rule chooses the lowest threshold on a fixed grid with at least 200 accepted examples and a 95% Wilson lower bound of at least 0.95 for accepted accuracy. If no threshold qualifies, the implementation can flag every prediction. The chosen v2 threshold is **0.75**. It is a policy selected from development data, not a promise.
 
-The recorded Windows sandbox required its temporary directory to stay in the project. The successful command was:
+On the 2,002-row assessment, 1,728 were accepted and 274 were flagged. Accuracy among accepted predictions was 95.25%, but **82 accepted predictions were wrong**; 116 of 198 total errors were flagged. The retrained word baseline using the original fixed raw-score 0.35 policy accepted 1,592, with 87 accepted errors, and flagged 163 of its 250 errors. Its separately temperature-scaled policy accepted 1,554 with 96.20% accepted accuracy and 59 accepted errors, while flagging 448. These are descriptive comparisons on the same assessment, not guarantees; the raw and scaled thresholds use different score scales. Coverage and accuracy must be reported with their denominators.
+
+## 9. The owner's example and other qualitative checks
+
+The original model returned `card_not_working` at 29.6%, then `declined_card_payment` at 7.9% and `top_up_failed` at 4.2%; it flagged the result. Its word vectorizer recognized 14 of 17 analyzed unigram/bigram occurrences; several location-related bigrams were absent, while words about a card not working contributed to the top logit. The wording could refer to a general card fault, a declined payment or a location-specific acceptance problem. There is no verified true label for this example.
+
+The new model returns the same top label at **96.4%** after temperature scaling, followed by `declined_card_payment` at 1.1% and `top_up_failed` at 0.4%. Its unscaled top score was about 49.1%. It is now above the 75% review threshold. This higher score is not proof that the category is correct; in particular, it shows why a high score must not replace human judgment. The app displays that warning next to every result.
+
+`reports/experiment_v2/illustrative_predictions.json` contains other manually authored examples, clearly labeled as illustrative, including out-of-scope questions. A PIN-related example received a counterintuitive high-scoring category. Those examples are not labeled benchmark data and cannot estimate real-world accuracy or out-of-scope detection. The app does not save visitor-entered questions.
+
+## 10. Artifacts and inference
+
+`artifacts/active.json` points to `artifacts/v2/` and records the metadata checksum. The v2 directory contains the saved `FeatureUnion`, classifier, label mapping, temperature, review policy, dimensions and file hashes. `predict.load_bundle()` resolves the active pointer; `load_bundle(path)` loads a specifically requested trusted release. The loader checks scikit-learn version, hashes, feature width and class ordering. These checks detect mismatched files, but joblib is safe to load only from a trusted source.
+
+In `predict.py`, inference transforms the question using the saved features, obtains the model's probabilities, applies the fixed temperature, maps the highest indices to labels and compares the top score to the threshold. `app.py` caches the bundle, rejects blank or very long input, and presents the score, alternatives, review indication and limitations. It does not download data or train at startup. The demo stays local at the owner's request.
+
+The matched assessment run used a 16-logical-processor Windows machine with thread pools limited to four. The chosen model had 18,738 features, about 11.5 MB of coefficient/intercept arrays and an 8.47 MB serialized classifier; the vectorizer was about 0.16 MB. On that run its median single-question prediction was about 6.0 ms and a 2,002-question batch took roughly 0.20 seconds. These timings are illustrative measurements, not service-level promises or peak-memory measurements.
+
+## 11. Tests, SQL and CI
+
+The offline suite checks data contracts, grouped splits, fold-only vocabulary, label order, temperature math and ranking, threshold and review-all behavior, saved file hashes, real release inference, a tiny CPU PyTorch training run, DuckDB reconciliation and Streamlit `AppTest`. Install `requirements-dev.txt` first. In the recorded Windows sandbox, the exact command was:
 
 ```powershell
 New-Item -ItemType Directory -Force -Path '.tmp' | Out-Null
 $env:TEMP = (Resolve-Path '.tmp').Path
 $env:TMP = $env:TEMP
+$env:OPENBLAS_NUM_THREADS = '4'
+$env:OMP_NUM_THREADS = '4'
 .\.venv\Scripts\python.exe -m pytest -q --basetemp=.pytest_tmp
 ```
 
-GitHub Actions is configured in `.github/workflows/tests.yml` for Python 3.12 and offline tests. [Hosted run 41496473950](https://github.com/PuravDesai004/SupportLens/actions/runs/41496473950) passed for commit `20be076b02cea75de825bcd3480682924fee7fe3`. A workflow file by itself is not proof that a later commit passed; inspect the repository's Actions page for the run and commit under review.
+`selected_assessment.csv` has only row IDs, labels, scores and flags. `sql/intent_summary.sql`, run through DuckDB, reconciles to 2,002 examples, 198 errors and 274 flags. `reports/evaluation.csv` is the historical v1 test export, not the active model's assessment. GitHub Actions is configured for Python 3.12; inspect the repository's Actions page for the actual run on the commit being discussed.
 
-## 12. Design decisions and alternatives
+## 12. Reproduction and practical decisions
 
-- **TF-IDF + logistic regression:** fast, sparse, understandable and a strong comparison point. It misses context beyond its word features.
-- **Small PyTorch model:** shows tensors, backpropagation and nonlinear layers without a GPU. It adds training complexity and did not win the validation rule in this run.
-- **Group-aware validation:** reduces normalized duplicate leakage between derived train and validation, although the official test still has seven overlaps and group stratification is approximate.
-- **Macro F1:** gives each intent equal weight. Accuracy is also reported so the two views can be compared.
-- **Streamlit:** a small Python interface that can load local artifacts without a separate API. It is not evidence of production cloud architecture.
-- **DuckDB + CSV:** makes per-intent counts reproducible and easy to inspect in Excel; it does not imply a live analytics warehouse.
+The README gives the full staged commands using a fresh ignored `reproduction/v2` output directory. `development` writes the candidate lock; `assessment` fits all candidates without assessment rows and writes the release lock; `previously-viewed-test` requires that lock and refuses to overwrite its output; `promote_v2` copies the exact locked candidate files. Re-running the already-seen test is a reproduction, not a fresh evaluation. Seeds and pinned direct dependencies help, but results can vary by hardware and OS.
 
-For a real bank, separate work would include representative and consented data, privacy and access controls, calibrated uncertainty, evaluation of unfamiliar requests and fairness across relevant groups, operational monitoring, human workflows, governance, and ongoing review. This repository does not establish those controls.
+Why these choices? Word TF-IDF and logistic regression are fast, sparse and explainable. Character n-grams can cover spelling variations but add features and inference cost. A small PyTorch network teaches gradient-based learning without a GPU, at the cost of an additional runtime dependency if deployed. Temperature scaling improves score reliability in this assessment but changes score magnitudes and is not an out-of-scope detector. A review threshold trades human workload against accepted errors. The app is local and simple, not evidence of a production cloud platform.
 
-## 13. Interview practice
+## 13. Interview questions
 
-**Beginner**
-
-1. *What is an intent?* A category describing what a question is about, such as card arrival; it is not the answer to the question.
-2. *What is a feature?* A numeric input to the model. Here each TF-IDF column represents a learned word or word pair.
-3. *Why use a validation set?* To make model choices without using the final test results for those choices.
-4. *What does an epoch mean?* One pass through the training examples, in batches.
-
-**Intermediate**
-
-5. *Why not fit TF-IDF on all the data?* That would let information from held-out text influence the vocabulary and term weights.
-6. *Why macro F1?* It weights each label equally and reveals a different view from overall accuracy. It can be noisy for labels with few validation examples.
-7. *Why raw logits for cross entropy?* PyTorch's loss applies the appropriate log-softmax internally; a prior softmax changes the computation.
-8. *Is 0.8 a calibrated 80% chance?* Not necessarily. It is a model score; calibration requires additional assessment on suitable held-out data.
-9. *Why not automatically switch to PyTorch after test?* Test results are meant to evaluate the validation-selected choice, not choose it again.
-
-**Project-specific**
-
-10. *How was leakage addressed?* TF-IDF was fit on derived train only and normalized groups were kept together between derived train and validation. Seven normalized official train/test overlaps remain disclosed.
-11. *How are the labels kept aligned?* A sorted `LabelEncoder` maps training labels to IDs; the ordered labels and model dimensions are saved and checked at inference.
-12. *What runs in the demo?* The local app serves logistic regression. The owner requested a local-only demo; the PyTorch candidate remains training code and evaluation evidence.
-13. *What should you say about impact?* State the measured dataset results and limits. There is no evidence of real customer use or a time or cost saving.
+1. **Why split before fitting TF-IDF?** Otherwise held-out words and their document frequencies affect the features learned by the model.
+2. **Why keep duplicate groups together?** The same normalized question on both sides could make validation artificially easy.
+3. **Why retrain the baseline for v2 assessment?** The old artifact may have trained on those rows; all candidates must fit the same development data.
+4. **What does macro F1 emphasize?** It averages per-label F1 equally, so common labels do not dominate the result.
+5. **What is top-3 accuracy?** The fraction of examples whose correct label is among the three highest-ranked outputs.
+6. **Does temperature scaling improve classification?** It preserves rankings; it can change score calibration and review decisions, not top-1 or top-3 accuracy.
+7. **Is the 0.75 threshold guaranteed to catch 95% of errors?** No. It was chosen to target accepted accuracy in development, not error capture, and 82 assessment errors were accepted.
+8. **Why not call the official test untouched?** Its results were already examined in v1 and there are seven normalized train/test overlaps.
+9. **Why are logits passed directly to cross entropy?** The PyTorch loss incorporates the appropriate log-softmax internally.
+10. **Does 96.4% on the owner's example prove it is correct?** No. Its true label is unverified, the wording is ambiguous, and calibration is population-dependent.
+11. **What if an artifact is missing or mismatched?** The loader checks checksums, dimensions, class order and version, and the app shows a setup error.
+12. **What business impact was measured?** None. These are research-data metrics, not actual support volumes, time saved or customer outcomes.
 
 ## 14. Hands-on exercises
 
-1. Open `reports/evaluation.csv` in Excel. Create a pivot with `true_label` as rows and counts of `correct` or `review` as values. Compare totals to `reports/intent_summary.csv` and the SQL query.
-2. In a separate reproduction directory, change a PyTorch training setting, run training, and compare **validation** macro F1. Record the setting and explain the tradeoff. The official test has already been observed and is not a fresh final exam; do not present another score as untouched.
-3. Add a small unit test with a whitespace-only input and an unfamiliar nonempty question. Check the first is rejected and observe, without claiming an out-of-scope guarantee, that the second is still assigned a known label.
-4. Trace one sample through `predict.py` and check that the number of scores equals the number of labels. Never inspect an untrusted joblib file by loading it.
+1. Open `selected_assessment.csv` in Excel and group by `true_label`; compare total errors and flags with `selected_assessment_intent_summary.csv` and the SQL query.
+2. Trace a generic question through `predict.py` and check the score vector has 77 values and uses the active metadata's temperature and label order.
+3. On a **new experiment**, compare a different character-feature setting using only development folds. Record the decision rule first; do not tune against the already-viewed test.
+4. Add an illustrative out-of-scope question, observe its label and review flag, and explain why one example cannot measure out-of-scope detection.
 
 ## 15. Limits and next steps
 
-These results describe one public English banking-intent dataset and one split. The dataset's known overlap, small validation support for some labels, fixed uncalibrated review threshold, and mandatory known-class output limit generalization. A future project could evaluate a properly collected out-of-domain set, validate calibration, assess subgroup behavior where appropriate, and test a human-review workflow with consent and privacy safeguards. None of those results is claimed here.
+The data represents one English banking-intent research task, not a bank's live population. Some intent labels overlap, some questions lack context, the test was previously viewed, and there are seven normalized train/test overlaps. The classifier always chooses one of the 77 labels. A high score can be wrong or out of scope, and the illustrative PIN example demonstrates this risk. Before any real use, separate work would need representative and consented data, privacy and access controls, monitoring, subgroup assessment where appropriate, calibration on current traffic, and a validated human-review workflow. No such production claim is made here.

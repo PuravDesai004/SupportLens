@@ -38,3 +38,12 @@ def test_review_policy_and_reliability_have_correct_denominators():
     assert summary["accepted_errors"] == 1 and summary["total_errors"] == 1
     all_review = choose_review_policy(y, p, min_accepted=200)
     assert all_review["review_all"] and review_summary(y, p, all_review)["accuracy_among_accepted"] is None
+
+
+def test_review_policy_selects_the_lowest_qualifying_grid_threshold():
+    p = np.vstack([np.tile([.9, .1], (210, 1)), np.tile([.55, .45], (90, 1))])
+    y = np.array([0] * 210 + [0] * 60 + [1] * 30)
+    policy = choose_review_policy(y, p, min_accepted=200)
+    assert policy["threshold"] == .575
+    assert policy["development_accepted"] == 210
+    assert policy["development_wilson_lower"] >= .95

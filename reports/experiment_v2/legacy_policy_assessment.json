@@ -1,0 +1,24 @@
+{
+  "matched_word_baseline_original_raw_threshold_0_35": {
+    "accepted": 1592,
+    "accepted_errors": 87,
+    "accepted_fraction": 0.7952047952047953,
+    "accuracy_among_accepted": 0.9453517587939698,
+    "errors_flagged": 163,
+    "examples": 2002,
+    "reviewed": 410,
+    "total_errors": 250
+  },
+  "note": "The baseline is retrained on the same development pool and uses the original v1 fixed raw-score threshold; this comparison did not affect selection.",
+  "scope": "Post-lock descriptive comparison on the development assessment; not an independent test.",
+  "selected_model_locked_policy": {
+    "accepted": 1728,
+    "accepted_errors": 82,
+    "accepted_fraction": 0.8631368631368631,
+    "accuracy_among_accepted": 0.9525462962962963,
+    "errors_flagged": 116,
+    "examples": 2002,
+    "reviewed": 274,
+    "total_errors": 198
+  }
+}

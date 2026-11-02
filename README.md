@@ -1,12 +1,12 @@
 # SupportLens
 
-SupportLens is an educational English-language banking-intent classifier. It suggests one of 77 categories for a support question, shows alternative categories, and flags low-scoring predictions for human review. It uses the public BANKING77 research dataset; it is not a bank service, does not access accounts or route tickets, and does not answer financial questions. Please do not enter account numbers, passwords, or other sensitive personal information.
+SupportLens is a **local educational demo** that suggests one of 77 BANKING77 intents for an English banking support question. It shows alternative categories and flags low-scoring predictions for review. It does not connect to a bank, answer banking questions, access accounts, or route tickets. Please do not enter account numbers, passwords, or other sensitive personal information.
 
-Repository: [PuravDesai004/SupportLens](https://github.com/PuravDesai004/SupportLens). The app is **local only** at the owner's request; no hosted demo or hosting account is required. [GitHub Actions](https://github.com/PuravDesai004/SupportLens/actions) runs the offline tests. [Hosted run 41496473950](https://github.com/PuravDesai004/SupportLens/actions/runs/41496473950) passed on commit `20be076b02cea75de825bcd3480682924fee7fe3`; check Actions for the latest commit's result.
+The app remains local at the owner's request. The source is in [PuravDesai004/SupportLens](https://github.com/PuravDesai004/SupportLens); [GitHub Actions](https://github.com/PuravDesai004/SupportLens/actions) runs offline checks. The project was built and improved with coding-agent assistance.
 
-## Run the app on Windows
+## Quickstart on Windows
 
-Python 3.12 was used for the recorded run. The available Python 3.14 installation was not used for this project. In PowerShell, from the project directory, use a Python 3.12 executable to create a project-local environment. On this machine the following path was used and verified:
+Python 3.12 was used for the measured runs. From this project folder, create an isolated environment with a Python 3.12 executable. The following executable path was verified on the owner's machine:
 
 ```powershell
 $Python312 = "$env:USERPROFILE\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
@@ -15,69 +15,62 @@ $Python312 = "$env:USERPROFILE\.cache\codex-runtimes\codex-primary-runtime\depen
 .\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-On another machine, substitute the path to an installed Python 3.12 executable. If `py -3.12` is registered, `py -3.12 -m venv .venv` is an alternative. The app uses the included selected artifacts and does not download data, retrain, or need API keys at startup. Use only artifacts from a trusted source: joblib files can execute code when loaded.
+On another machine, substitute its Python 3.12 path; if registered, `py -3.12 -m venv .venv` is an alternative. The included trusted artifacts load without downloading data, retraining, PyTorch, API keys or a hosting account. Only load joblib artifacts from a trusted source; serialized files can execute code. To install training and test dependencies, use `python -m pip install -r requirements-dev.txt` in the environment.
 
-A real local browser check: entering **“Where is my new card?”** returned **Card arrival**, a **93.3%** model score, and an above-threshold indication. This is one example, not an accuracy estimate.
+## Current model and evidence
 
-To install training and test dependencies as well:
+The active v2 model combines word and character TF-IDF features with logistic regression. Its scores are temperature-scaled using out-of-fold development predictions, and scores below **0.75** are flagged for review. Temperature scaling changes score magnitudes, not the class ranking. It is not a guarantee that a high-scoring answer is correct or that an unfamiliar question will be detected.
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.\.venv\Scripts\python.exe -m pytest -q
-```
+The candidates were retrained on the same data: the original word-only logistic configuration, word-plus-character logistic regression, and the existing small PyTorch network. All learned text features were fit inside each training fold. On three pooled group-aware development folds (8,001 examples), word-plus-character logistic led the matched baseline on macro F1, 0.8734 versus 0.8472. Its paired, class-stratified bootstrap interval for the gain was approximately [0.0216, 0.0312]; this descriptive interval does not account for all dependence from overlapping fold training.
 
-The sandbox used for the recorded local run required a project-local temporary folder. The exact successful command is documented in [the study guide](docs/PROJECT_STUDY_GUIDE.md#testing-and-ci).
+On the separate **development assessment** (2,002 examples, 77 labels), all three models were retrained without those assessment rows:
 
-## How it works
+| Candidate | Accuracy | Macro F1 | Top-3 accuracy |
+| --- | ---: | ---: | ---: |
+| Word-only logistic regression | 87.51% | 0.8736 | 96.60% |
+| **Word + character logistic — selected** | **90.11%** | **0.9007** | **97.25%** |
+| Word TF-IDF + PyTorch | 88.01% | 0.8776 | 96.75% |
 
-```text
-Official train CSV -> grouped train / validation split
-  -> fit TF-IDF on train only -> logistic regression + PyTorch candidates
-  -> choose by validation macro F1 -> lock decision -> official test evaluation
+The assessment was a predeclared release-confirmation gate and therefore also contributed to the release decision; it is not an untouched final test. The selected model's assessment log loss fell from 0.5800 to 0.3749 and 10-bin expected calibration error from 0.1967 to 0.0207 after temperature scaling. ECE depends on the chosen bins, and these results do not prove calibration on real-world questions.
 
-Visitor question -> saved TF-IDF -> saved selected classifier -> top intents + review flag
-```
+At the 0.75 threshold, **1,728 of 2,002** assessment predictions were accepted, with **95.25% accuracy among accepted**. Of 198 total errors, 116 were flagged and **82 were accepted**. This tradeoff is important: the flag reduces review volume but misses some errors. The threshold was chosen from development out-of-fold predictions using a conservative Wilson-bound rule, not tuned on assessment or test; its target is not a future guarantee.
 
-The 6,000-feature TF-IDF vectorizer uses word unigrams and bigrams, `min_df=2`, and sublinear term frequency. Logistic regression is the selected model. A small CPU PyTorch network uses the same features, a 64-unit ReLU hidden layer and 77 output logits. Configuration and measured validation scores are in [reports/selection.json](reports/selection.json); details are in [architecture](docs/ARCHITECTURE.md).
+For a post-lock descriptive comparison on those same assessment rows, the retrained word baseline with its original raw-score 0.35 policy accepted 1,592, of which 87 were errors, and flagged 163 of its 250 errors. V2 accepted more rows and had fewer accepted errors in this sample, but flagged 116 of its 198 errors. These two score thresholds use different scales, and neither policy reliably catches every mistake.
 
-## Data and attribution
+After the model, temperature and threshold were frozen, all fixed approaches were scored once on the **previously viewed** official test. The original v1 artifact scored 87.60% accuracy / 0.8761 macro F1; v2 scored 89.84% / 0.8987 on the same 3,080 examples. This is an exploratory comparison on a test set already seen in the project, not a new independent holdout. See [the experiment results](reports/experiment_v2/RESULTS.md) for all candidates, calibration, per-class files, review counts, timing and limitations.
 
-The official source CSVs at revision [`9d081458ff52e53cf7e848f414e6e9344e4e6696`](https://github.com/PolyAI-LDN/task-specific-datasets/tree/9d081458ff52e53cf7e848f414e6e9344e4e6696/banking_data) contain `text` and `category`: 10,003 training rows and 3,080 test rows across 77 labels. The train labels have 35–187 rows each; the official test has 40 per label. The derived split is 8,002 train and 2,001 validation rows, using the first shuffled five-fold `StratifiedGroupKFold` split with seed 42 and case-folded, whitespace-normalized text as groups. All 77 labels occur in both subsets.
+The owner's illustrative question still predicted `card_not_working`: the old release gave 29.6% and flagged it; v2 gives 96.4% and does not flag it. The expected label is unknown and the wording is ambiguous. A higher score alone does **not** prove that this individual prediction improved. The app explicitly warns that a high score can be wrong.
 
-No normalized text group crosses derived train and validation. Seven normalized texts occur in both official train and test (six in derived train and one in validation); their labels agree. There are no exact-string overlaps between official train and test. This overlap can make the full official test score slightly optimistic. The official test has not been silently filtered. Counts, distribution, duplicate checks, source URLs, checksums, and versions are recorded in [reports/data_manifest.json](reports/data_manifest.json).
+## Data and reproducibility
 
-Dataset: [BANKING77, curated by PolyAI](https://huggingface.co/datasets/PolyAI/banking77), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Citation: Casanueva, Temčinas, Gerz, Henderson, and Vulić, [*Efficient Intent Detection with Dual Sentence Encoders*](https://arxiv.org/abs/2003.04807), 2020. SupportLens derives a validation split and numeric features from the published data; the included evaluation CSV contains labels and scores, not source text.
+The public [BANKING77 dataset](https://huggingface.co/datasets/PolyAI/banking77), curated by PolyAI and licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), is attributed to Casanueva, Temčinas, Gerz, Henderson and Vulić, [*Efficient Intent Detection with Dual Sentence Encoders*](https://arxiv.org/abs/2003.04807), 2020. The pinned source revision is [`9d081458ff52e53cf7e848f414e6e9344e4e6696`](https://github.com/PolyAI-LDN/task-specific-datasets/tree/9d081458ff52e53cf7e848f414e6e9344e4e6696/banking_data). The files contain 10,003 official training and 3,080 official test rows with 77 labels. [data_manifest.json](reports/data_manifest.json) records source hashes, columns, label counts and duplicate checks.
 
-## Measured comparison
+V2 uses a first five-fold, normalized-text-group split (seed 73): 8,001 development and 2,002 assessment rows. The development pool uses three group-aware folds (seed 137). No normalized group crosses either split. Six normalized texts in the v2 development pool and one in its assessment also occur in the official test, all with matching labels. Those seven overlaps and prior test exposure limit the evidence. A new split does not erase prior exposure to the data.
 
-The rule was fixed before viewing test metrics: select the candidate with the higher validation macro F1; exact ties go to the simpler baseline. Both candidates used the same derived training and validation rows, and the same full official test rows after selection.
+[selected_assessment.csv](reports/experiment_v2/selected_assessment.csv) contains public-dataset row IDs, true and predicted labels, scores, correctness and review flags—not question text. [The DuckDB summary](reports/experiment_v2/selected_assessment_intent_summary.csv), produced with [sql/intent_summary.sql](sql/intent_summary.sql), reconciles to 2,002 rows, 198 errors and 274 review flags. The old v1 [evaluation CSV](reports/evaluation.csv), model reports, original code and artifacts under `artifacts/previous_v1/` are preserved.
 
-| Model | Validation accuracy / macro F1 (n=2,001) | Official test accuracy / macro F1 (n=3,080) |
-| --- | --- | --- |
-| TF-IDF + logistic regression **selected** | 87.96% / 0.8767 | 87.60% / 0.8761 |
-| TF-IDF + PyTorch network | 87.86% / 0.8733 | 88.73% / 0.8878 |
-
-The test ranking differs; the validation-based choice remains unchanged. Test metrics cover 77 supported labels. The baseline's fixed 0.35 review threshold flagged 624 of 3,080 test examples (20.26%); among the remaining 2,456 examples, accuracy was 94.95%. These are in-dataset results, not estimates of real bank performance. Scores are not necessarily calibrated, and a high score does not reliably detect an unfamiliar question. The threshold was fixed before test evaluation, not tuned on test data.
-
-Open [reports/evaluation.csv](reports/evaluation.csv) in Excel: each row has a test row ID, true and predicted labels, score, correctness, and review flag. [reports/intent_summary.csv](reports/intent_summary.csv) was calculated by [sql/intent_summary.sql](sql/intent_summary.sql) using DuckDB; its totals reconcile to 3,080 rows, 382 errors, and 624 flags. Per-class precision, recall, F1 and support for both models, plus common confusion pairs, are in `reports/`.
-
-## Reproduce the training run
-
-The test set has already been viewed in this published project. Re-running it is a reproduction, not a new untouched holdout. The following commands download the pinned official CSVs, verify their SHA-256 hashes, and write new results to ignored `reproduction/`, preserving the shipped evidence and artifacts:
+To reproduce the v2 experiment in a new ignored output folder without overwriting the shipped evidence:
 
 ```powershell
 $env:PYTHONPATH = 'src'
 .\.venv\Scripts\python.exe -m supportlens.data
-$env:SUPPORTLENS_OUTPUT_ROOT = "$PWD\reproduction"
+$env:SUPPORTLENS_OUTPUT_ROOT = "$PWD\reproduction\v2"
 $env:OPENBLAS_NUM_THREADS = '4'
 $env:OMP_NUM_THREADS = '4'
-.\.venv\Scripts\python.exe -m supportlens.train
-.\.venv\Scripts\python.exe -m supportlens.evaluate
+.\.venv\Scripts\python.exe -m supportlens.experiment_v2 development
+.\.venv\Scripts\python.exe scripts/summarize_development_folds.py
+.\.venv\Scripts\python.exe -m supportlens.experiment_v2 assessment
+.\.venv\Scripts\python.exe scripts/summarize_assessment_intervals.py
+.\.venv\Scripts\python.exe -m supportlens.experiment_v2 previously-viewed-test
+.\.venv\Scripts\python.exe -m supportlens.promote_v2
+.\.venv\Scripts\python.exe scripts/export_v2_assessment.py
 Remove-Item Env:SUPPORTLENS_OUTPUT_ROOT
 ```
 
-Install `requirements-dev.txt` first. Training is CPU-only. Fixed seeds and pinned direct dependencies help, but exact floating-point results may differ across operating systems or hardware. `supportlens.train` refuses to overwrite a directory containing test results. A deliberate same-directory correctness rerun of evaluation requires `--allow-rerun` and records prior metrics.
+Install `requirements-dev.txt` first and use a fresh output folder. The test has already been viewed; a reproduction is not a new independent test. Stages refuse to overwrite locked results. Runs are seeded and CPU-only, but floating-point results and speed can vary across hardware and operating systems. [EXPERIMENT_PLAN.md](docs/EXPERIMENT_PLAN.md) records the rules fixed before model fitting.
 
-## Limits and next steps
+## Tests and limitations
 
-The data has 77 in-domain labels and does not establish real ticket volumes, handling time, service levels, customer outcomes, or value. The classifier must choose a known label even for out-of-scope text. Human review, privacy controls, representative real-world evaluation and appropriate calibration would require separate design before any actual support use. The app does not print or persist visitor text in its own code; the hosting provider may retain logs. This project was built with coding-agent assistance and is intended to be understood and explained by its owner.
+Run `python -m pytest -q` in the development environment. Tests cover grouped splits, fold-only features, calibration, thresholds, artifact checksums and label order, real model output, evaluation exports, and the Streamlit app. The [study guide](docs/PROJECT_STUDY_GUIDE.md) gives the exact sandbox command and an interview walkthrough. Check the [Actions page](https://github.com/PuravDesai004/SupportLens/actions) for the latest hosted test status.
+
+This is a 77-class in-domain research-data demo. It has no reliable out-of-scope detector, and it does not establish ticket volumes, handling time, customer outcomes, or real-bank performance. Manually authored examples are illustrative only. The app code does not print or persist visitor-entered questions; if someone separately hosts it, their provider may retain logs. A real bank would require representative data, privacy controls, monitoring, calibrated uncertainty assessment and an appropriate human workflow.

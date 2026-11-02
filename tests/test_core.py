@@ -12,7 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 from supportlens.config import VECTORIZER_CONFIG
 from supportlens.data import normalized, sha256_file, split_train_validation, validate_frame
 from supportlens.evaluate import sql_summary, summarize
-from supportlens.predict import load_bundle, predict
+from supportlens.predict import load_active_bundle, load_bundle, predict
 from supportlens.torch_model import predict_probabilities, train_network
 
 
@@ -66,6 +66,35 @@ def test_saved_bundle_predicts_and_checks_inputs(tmp_path):
     (tmp_path / "model.joblib").write_bytes(b"tampered")
     with pytest.raises(ValueError, match="checksum"):
         load_bundle(tmp_path)
+
+
+def test_review_threshold_temperature_and_release_pointer(tmp_path):
+    class Vectorizer:
+        def transform(self, texts):
+            return texts
+
+    class Model:
+        def predict_proba(self, texts):
+            return np.array([[.6, .4]])
+
+    meta = {"model": "baseline", "labels": ["card", "transfer"], "temperature": .5,
+            "review_threshold": .60, "review_all": False}
+    result = predict("A generic question", (Vectorizer(), Model(), meta))
+    assert result["score"] == pytest.approx(.36 / (.36 + .16))
+    meta["review_threshold"] = result["score"]
+    assert not predict("A generic question", (Vectorizer(), Model(), meta))["review"]  # Equality is accepted.
+    meta["review_threshold"] = result["score"] + .001
+    assert predict("A generic question", (Vectorizer(), Model(), meta))["review"]
+    meta["review_all"] = True
+    assert predict("A generic question", (Vectorizer(), Model(), meta))["review"]
+    (tmp_path / "active.json").write_text(json.dumps({"release": "../other", "metadata_sha256": "x"}), encoding="utf-8")
+    with pytest.raises(ValueError, match="release"):
+        load_active_bundle(tmp_path)
+    (tmp_path / "v2").mkdir()
+    (tmp_path / "v2" / "metadata.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "active.json").write_text(json.dumps({"release": "v2", "metadata_sha256": "wrong"}), encoding="utf-8")
+    with pytest.raises(ValueError, match="metadata checksum"):
+        load_active_bundle(tmp_path)
 
 
 def test_metrics_and_duckdb_totals_reconcile(tmp_path):

@@ -1,0 +1,1367 @@
+{
+  "created_at_utc": "2026-11-02T18:22:58.831781+00:00",
+  "examples": 3080,
+  "models": {
+    "previous_v1": {
+      "accuracy": 0.875974025974026,
+      "common_confusions": [
+        {
+          "count": 7,
+          "predicted_label": "card_payment_wrong_exchange_rate",
+          "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+        },
+        {
+          "count": 6,
+          "predicted_label": "card_not_working",
+          "true_label": "card_acceptance"
+        },
+        {
+          "count": 6,
+          "predicted_label": "why_verify_identity",
+          "true_label": "verify_my_identity"
+        },
+        {
+          "count": 5,
+          "predicted_label": "exchange_via_app",
+          "true_label": "fiat_currency_support"
+        },
+        {
+          "count": 5,
+          "predicted_label": "get_physical_card",
+          "true_label": "pin_blocked"
+        },
+        {
+          "count": 5,
+          "predicted_label": "verify_my_identity",
+          "true_label": "unable_to_verify_identity"
+        },
+        {
+          "count": 5,
+          "predicted_label": "get_disposable_virtual_card",
+          "true_label": "virtual_card_not_working"
+        },
+        {
+          "count": 4,
+          "predicted_label": "card_delivery_estimate",
+          "true_label": "card_arrival"
+        },
+        {
+          "count": 4,
+          "predicted_label": "top_up_failed",
+          "true_label": "top_up_reverted"
+        },
+        {
+          "count": 4,
+          "predicted_label": "verify_my_identity",
+          "true_label": "why_verify_identity"
+        },
+        {
+          "count": 4,
+          "predicted_label": "pin_blocked",
+          "true_label": "get_physical_card"
+        },
+        {
+          "count": 4,
+          "predicted_label": "balance_not_updated_after_bank_transfer",
+          "true_label": "pending_transfer"
+        },
+        {
+          "count": 4,
+          "predicted_label": "balance_not_updated_after_bank_transfer",
+          "true_label": "transfer_timing"
+        },
+        {
+          "count": 4,
+          "predicted_label": "getting_virtual_card",
+          "true_label": "virtual_card_not_working"
+        },
+        {
+          "count": 4,
+          "predicted_label": "disposable_card_limits",
+          "true_label": "get_disposable_virtual_card"
+        },
+        {
+          "count": 4,
+          "predicted_label": "top_up_reverted",
+          "true_label": "top_up_failed"
+        },
+        {
+          "count": 4,
+          "predicted_label": "transfer_not_received_by_recipient",
+          "true_label": "balance_not_updated_after_bank_transfer"
+        },
+        {
+          "count": 3,
+          "predicted_label": "card_arrival",
+          "true_label": "card_delivery_estimate"
+        },
+        {
+          "count": 3,
+          "predicted_label": "fiat_currency_support",
+          "true_label": "exchange_via_app"
+        },
+        {
+          "count": 3,
+          "predicted_label": "card_not_working",
+          "true_label": "contactless_not_working"
+        }
+      ],
+      "ece_10_bins": 0.25279805488339946,
+      "examples": 3080,
+      "log_loss": 0.7423444850520913,
+      "macro_f1": 0.8761319612902874,
+      "reliability_bins": [
+        {
+          "accuracy": 0.34,
+          "count": 50,
+          "lower": 0.0,
+          "mean_score": 0.07992819892988373,
+          "upper": 0.1
+        },
+        {
+          "accuracy": 0.46859903381642515,
+          "count": 207,
+          "lower": 0.1,
+          "mean_score": 0.15017883093951875,
+          "upper": 0.2
+        },
+        {
+          "accuracy": 0.65,
+          "count": 240,
+          "lower": 0.2,
+          "mean_score": 0.2519106367381745,
+          "upper": 0.3
+        },
+        {
+          "accuracy": 0.7682926829268293,
+          "count": 246,
+          "lower": 0.3,
+          "mean_score": 0.34894496721941975,
+          "upper": 0.4
+        },
+        {
+          "accuracy": 0.8376383763837638,
+          "count": 271,
+          "lower": 0.4,
+          "mean_score": 0.4493204092412998,
+          "upper": 0.5
+        },
+        {
+          "accuracy": 0.9255663430420712,
+          "count": 309,
+          "lower": 0.5,
+          "mean_score": 0.5491623408568888,
+          "upper": 0.6
+        },
+        {
+          "accuracy": 0.9438943894389439,
+          "count": 303,
+          "lower": 0.6,
+          "mean_score": 0.6517721226395866,
+          "upper": 0.7
+        },
+        {
+          "accuracy": 0.9849246231155779,
+          "count": 398,
+          "lower": 0.7,
+          "mean_score": 0.7492786767354837,
+          "upper": 0.8
+        },
+        {
+          "accuracy": 0.9901185770750988,
+          "count": 506,
+          "lower": 0.8,
+          "mean_score": 0.8525829154889575,
+          "upper": 0.9
+        },
+        {
+          "accuracy": 0.9945454545454545,
+          "count": 550,
+          "lower": 0.9,
+          "mean_score": 0.9444286041598461,
+          "upper": 1.0
+        }
+      ],
+      "review": {
+        "accepted": 2456,
+        "accepted_errors": 124,
+        "accepted_fraction": 0.7974025974025974,
+        "accuracy_among_accepted": 0.9495114006514658,
+        "errors_flagged": 258,
+        "examples": 3080,
+        "reviewed": 624,
+        "total_errors": 382
+      },
+      "supported_labels": 77,
+      "top3_accuracy": 0.9626623376623377
+    },
+    "word_char_logistic": {
+      "raw": {
+        "accuracy": 0.8983766233766234,
+        "common_confusions": [
+          {
+            "count": 8,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "virtual_card_not_working"
+          },
+          {
+            "count": 6,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 4,
+            "predicted_label": "card_delivery_estimate",
+            "true_label": "card_arrival"
+          },
+          {
+            "count": 4,
+            "predicted_label": "supported_cards_and_currencies",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 4,
+            "predicted_label": "exchange_via_app",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 4,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 4,
+            "predicted_label": "card_not_working",
+            "true_label": "card_acceptance"
+          },
+          {
+            "count": 4,
+            "predicted_label": "top_up_reverted",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 3,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 3,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 3,
+            "predicted_label": "failed_transfer",
+            "true_label": "pending_transfer"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "card_swallowed"
+          },
+          {
+            "count": 3,
+            "predicted_label": "balance_not_updated_after_cheque_or_cash_deposit",
+            "true_label": "top_up_by_cash_or_cheque"
+          },
+          {
+            "count": 3,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "get_disposable_virtual_card"
+          }
+        ],
+        "ece_10_bins": 0.19197480061955294,
+        "examples": 3080,
+        "log_loss": 0.5669774460431355,
+        "macro_f1": 0.8986806028481501,
+        "reliability_bins": [
+          {
+            "accuracy": 0.3076923076923077,
+            "count": 13,
+            "lower": 0.0,
+            "mean_score": 0.07583083887993057,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.4198473282442748,
+            "count": 131,
+            "lower": 0.1,
+            "mean_score": 0.1565358411594493,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.572289156626506,
+            "count": 166,
+            "lower": 0.2,
+            "mean_score": 0.25079852907192896,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.6946107784431138,
+            "count": 167,
+            "lower": 0.3,
+            "mean_score": 0.34948573966437585,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.8105726872246696,
+            "count": 227,
+            "lower": 0.4,
+            "mean_score": 0.450929465188605,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.908745247148289,
+            "count": 263,
+            "lower": 0.5,
+            "mean_score": 0.5524196302901039,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.9197080291970803,
+            "count": 274,
+            "lower": 0.6,
+            "mean_score": 0.6512492971993171,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.9791666666666666,
+            "count": 336,
+            "lower": 0.7,
+            "mean_score": 0.7517601536460464,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.9896193771626297,
+            "count": 578,
+            "lower": 0.8,
+            "mean_score": 0.8547757857009771,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9956756756756757,
+            "count": 925,
+            "lower": 0.9,
+            "mean_score": 0.9529594260406477,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 2548,
+          "accepted_errors": 95,
+          "accepted_fraction": 0.8272727272727273,
+          "accuracy_among_accepted": 0.9627158555729984,
+          "errors_flagged": 218,
+          "examples": 3080,
+          "reviewed": 532,
+          "total_errors": 313
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9720779220779221
+      },
+      "temperature": {
+        "accuracy": 0.8983766233766234,
+        "common_confusions": [
+          {
+            "count": 8,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "virtual_card_not_working"
+          },
+          {
+            "count": 6,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 4,
+            "predicted_label": "card_delivery_estimate",
+            "true_label": "card_arrival"
+          },
+          {
+            "count": 4,
+            "predicted_label": "supported_cards_and_currencies",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 4,
+            "predicted_label": "exchange_via_app",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 4,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 4,
+            "predicted_label": "card_not_working",
+            "true_label": "card_acceptance"
+          },
+          {
+            "count": 4,
+            "predicted_label": "top_up_reverted",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 3,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 3,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 3,
+            "predicted_label": "failed_transfer",
+            "true_label": "pending_transfer"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "card_swallowed"
+          },
+          {
+            "count": 3,
+            "predicted_label": "balance_not_updated_after_cheque_or_cash_deposit",
+            "true_label": "top_up_by_cash_or_cheque"
+          },
+          {
+            "count": 3,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "get_disposable_virtual_card"
+          }
+        ],
+        "ece_10_bins": 0.012908945272666507,
+        "examples": 3080,
+        "log_loss": 0.3567646820434159,
+        "macro_f1": 0.8986806028481501,
+        "reliability_bins": [
+          {
+            "accuracy": 0.0,
+            "count": 1,
+            "lower": 0.0,
+            "mean_score": 0.09082220575681878,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.5,
+            "count": 6,
+            "lower": 0.1,
+            "mean_score": 0.16767465405393878,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.38095238095238093,
+            "count": 21,
+            "lower": 0.2,
+            "mean_score": 0.2536764550119505,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.28,
+            "count": 50,
+            "lower": 0.3,
+            "mean_score": 0.3521923168317136,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.3793103448275862,
+            "count": 87,
+            "lower": 0.4,
+            "mean_score": 0.4454878959501529,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.49557522123893805,
+            "count": 113,
+            "lower": 0.5,
+            "mean_score": 0.5522004101203807,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.6261682242990654,
+            "count": 107,
+            "lower": 0.6,
+            "mean_score": 0.6505991836149922,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.7142857142857143,
+            "count": 133,
+            "lower": 0.7,
+            "mean_score": 0.7528834622855446,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.8216216216216217,
+            "count": 185,
+            "lower": 0.8,
+            "mean_score": 0.8561565681353435,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9840134623474969,
+            "count": 2377,
+            "lower": 0.9,
+            "mean_score": 0.9861588958119304,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 2629,
+          "accepted_errors": 86,
+          "accepted_fraction": 0.8535714285714285,
+          "accuracy_among_accepted": 0.9672879421833397,
+          "errors_flagged": 227,
+          "examples": 3080,
+          "reviewed": 451,
+          "total_errors": 313
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9720779220779221
+      }
+    },
+    "word_logistic": {
+      "raw": {
+        "accuracy": 0.8753246753246753,
+        "common_confusions": [
+          {
+            "count": 7,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "virtual_card_not_working"
+          },
+          {
+            "count": 6,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 5,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 5,
+            "predicted_label": "card_not_working",
+            "true_label": "card_acceptance"
+          },
+          {
+            "count": 5,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 4,
+            "predicted_label": "exchange_via_app",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 4,
+            "predicted_label": "card_not_working",
+            "true_label": "contactless_not_working"
+          },
+          {
+            "count": 4,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 4,
+            "predicted_label": "extra_charge_on_statement",
+            "true_label": "card_payment_not_recognised"
+          },
+          {
+            "count": 4,
+            "predicted_label": "Refund_not_showing_up",
+            "true_label": "request_refund"
+          },
+          {
+            "count": 4,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_delivery_estimate",
+            "true_label": "card_arrival"
+          },
+          {
+            "count": 3,
+            "predicted_label": "supported_cards_and_currencies",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 3,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 3,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_acceptance",
+            "true_label": "atm_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "pending_card_payment",
+            "true_label": "pending_transfer"
+          }
+        ],
+        "ece_10_bins": 0.2548178289348542,
+        "examples": 3080,
+        "log_loss": 0.7484809094782847,
+        "macro_f1": 0.8755682115260166,
+        "reliability_bins": [
+          {
+            "accuracy": 0.2641509433962264,
+            "count": 53,
+            "lower": 0.0,
+            "mean_score": 0.07994399443996854,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.4697674418604651,
+            "count": 215,
+            "lower": 0.1,
+            "mean_score": 0.154064349597842,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.6763485477178424,
+            "count": 241,
+            "lower": 0.2,
+            "mean_score": 0.25176116558656697,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.7651821862348178,
+            "count": 247,
+            "lower": 0.3,
+            "mean_score": 0.3524733604436822,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.8645833333333334,
+            "count": 288,
+            "lower": 0.4,
+            "mean_score": 0.45487685311058,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.9145907473309609,
+            "count": 281,
+            "lower": 0.5,
+            "mean_score": 0.547346950302044,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.9439252336448598,
+            "count": 321,
+            "lower": 0.6,
+            "mean_score": 0.64932758889629,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.98,
+            "count": 400,
+            "lower": 0.7,
+            "mean_score": 0.7494138139215059,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.9919028340080972,
+            "count": 494,
+            "lower": 0.8,
+            "mean_score": 0.8554349436019353,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9962962962962963,
+            "count": 540,
+            "lower": 0.9,
+            "mean_score": 0.9453172011138031,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 2324,
+          "accepted_errors": 95,
+          "accepted_fraction": 0.7545454545454545,
+          "accuracy_among_accepted": 0.9591222030981067,
+          "errors_flagged": 289,
+          "examples": 3080,
+          "reviewed": 756,
+          "total_errors": 384
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9652597402597403
+      },
+      "temperature": {
+        "accuracy": 0.8753246753246753,
+        "common_confusions": [
+          {
+            "count": 7,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "virtual_card_not_working"
+          },
+          {
+            "count": 6,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 5,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 5,
+            "predicted_label": "card_not_working",
+            "true_label": "card_acceptance"
+          },
+          {
+            "count": 5,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 4,
+            "predicted_label": "exchange_via_app",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 4,
+            "predicted_label": "card_not_working",
+            "true_label": "contactless_not_working"
+          },
+          {
+            "count": 4,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 4,
+            "predicted_label": "extra_charge_on_statement",
+            "true_label": "card_payment_not_recognised"
+          },
+          {
+            "count": 4,
+            "predicted_label": "Refund_not_showing_up",
+            "true_label": "request_refund"
+          },
+          {
+            "count": 4,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_delivery_estimate",
+            "true_label": "card_arrival"
+          },
+          {
+            "count": 3,
+            "predicted_label": "supported_cards_and_currencies",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 3,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 3,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "getting_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_acceptance",
+            "true_label": "atm_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "pending_card_payment",
+            "true_label": "pending_transfer"
+          }
+        ],
+        "ece_10_bins": 0.01407785930524354,
+        "examples": 3080,
+        "log_loss": 0.43298452951052857,
+        "macro_f1": 0.8755682115260166,
+        "reliability_bins": [
+          {
+            "accuracy": 0.0,
+            "count": 1,
+            "lower": 0.0,
+            "mean_score": 0.09859214226706486,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.1,
+            "count": 10,
+            "lower": 0.1,
+            "mean_score": 0.15263882380645583,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.2127659574468085,
+            "count": 47,
+            "lower": 0.2,
+            "mean_score": 0.2602069208716643,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.36231884057971014,
+            "count": 69,
+            "lower": 0.3,
+            "mean_score": 0.35512177149717183,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.3950617283950617,
+            "count": 81,
+            "lower": 0.4,
+            "mean_score": 0.45415535193528483,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.5348837209302325,
+            "count": 129,
+            "lower": 0.5,
+            "mean_score": 0.5471780231011418,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.6482758620689655,
+            "count": 145,
+            "lower": 0.6,
+            "mean_score": 0.6486484178049128,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.6592592592592592,
+            "count": 135,
+            "lower": 0.7,
+            "mean_score": 0.7501736089911647,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.8212765957446808,
+            "count": 235,
+            "lower": 0.8,
+            "mean_score": 0.8568797302478055,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.979802513464991,
+            "count": 2228,
+            "lower": 0.9,
+            "mean_score": 0.9856112030258509,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 2420,
+          "accepted_errors": 81,
+          "accepted_fraction": 0.7857142857142857,
+          "accuracy_among_accepted": 0.9665289256198347,
+          "errors_flagged": 303,
+          "examples": 3080,
+          "reviewed": 660,
+          "total_errors": 384
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9652597402597403
+      }
+    },
+    "word_torch": {
+      "raw": {
+        "accuracy": 0.8853896103896104,
+        "common_confusions": [
+          {
+            "count": 11,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 5,
+            "predicted_label": "card_not_working",
+            "true_label": "contactless_not_working"
+          },
+          {
+            "count": 5,
+            "predicted_label": "direct_debit_payment_not_recognised",
+            "true_label": "card_payment_not_recognised"
+          },
+          {
+            "count": 5,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 5,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "pending_transfer"
+          },
+          {
+            "count": 5,
+            "predicted_label": "pending_transfer",
+            "true_label": "balance_not_updated_after_bank_transfer"
+          },
+          {
+            "count": 4,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_delivery_estimate",
+            "true_label": "card_arrival"
+          },
+          {
+            "count": 3,
+            "predicted_label": "wrong_exchange_rate_for_cash_withdrawal",
+            "true_label": "card_payment_wrong_exchange_rate"
+          },
+          {
+            "count": 3,
+            "predicted_label": "exchange_via_app",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "card_acceptance"
+          },
+          {
+            "count": 3,
+            "predicted_label": "compromised_card",
+            "true_label": "card_payment_not_recognised"
+          },
+          {
+            "count": 3,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "topping_up_by_card"
+          },
+          {
+            "count": 3,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_acceptance",
+            "true_label": "atm_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "card_swallowed"
+          }
+        ],
+        "ece_10_bins": 0.04052776486745905,
+        "examples": 3080,
+        "log_loss": 0.40480960115617204,
+        "macro_f1": 0.8858366749606053,
+        "reliability_bins": [
+          {
+            "accuracy": null,
+            "count": 0,
+            "lower": 0.0,
+            "mean_score": null,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.17391304347826086,
+            "count": 23,
+            "lower": 0.1,
+            "mean_score": 0.16461731493473053,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.2537313432835821,
+            "count": 67,
+            "lower": 0.2,
+            "mean_score": 0.25200340151786804,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.46226415094339623,
+            "count": 106,
+            "lower": 0.3,
+            "mean_score": 0.3554486632347107,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.5319148936170213,
+            "count": 141,
+            "lower": 0.4,
+            "mean_score": 0.45231086015701294,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.6410256410256411,
+            "count": 156,
+            "lower": 0.5,
+            "mean_score": 0.5537510514259338,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.7421383647798742,
+            "count": 159,
+            "lower": 0.6,
+            "mean_score": 0.6514246463775635,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.8367346938775511,
+            "count": 196,
+            "lower": 0.7,
+            "mean_score": 0.7510610222816467,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.9503105590062112,
+            "count": 322,
+            "lower": 0.8,
+            "mean_score": 0.8558530807495117,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9916230366492147,
+            "count": 1910,
+            "lower": 0.9,
+            "mean_score": 0.9776420593261719,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 2554,
+          "accepted_errors": 96,
+          "accepted_fraction": 0.8292207792207792,
+          "accuracy_among_accepted": 0.9624119028974158,
+          "errors_flagged": 257,
+          "examples": 3080,
+          "reviewed": 526,
+          "total_errors": 353
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9714285714285714
+      },
+      "temperature": {
+        "accuracy": 0.8853896103896104,
+        "common_confusions": [
+          {
+            "count": 11,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 5,
+            "predicted_label": "card_not_working",
+            "true_label": "contactless_not_working"
+          },
+          {
+            "count": 5,
+            "predicted_label": "direct_debit_payment_not_recognised",
+            "true_label": "card_payment_not_recognised"
+          },
+          {
+            "count": 5,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 5,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "pending_transfer"
+          },
+          {
+            "count": 5,
+            "predicted_label": "pending_transfer",
+            "true_label": "balance_not_updated_after_bank_transfer"
+          },
+          {
+            "count": 4,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_delivery_estimate",
+            "true_label": "card_arrival"
+          },
+          {
+            "count": 3,
+            "predicted_label": "wrong_exchange_rate_for_cash_withdrawal",
+            "true_label": "card_payment_wrong_exchange_rate"
+          },
+          {
+            "count": 3,
+            "predicted_label": "exchange_via_app",
+            "true_label": "fiat_currency_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "card_acceptance"
+          },
+          {
+            "count": 3,
+            "predicted_label": "compromised_card",
+            "true_label": "card_payment_not_recognised"
+          },
+          {
+            "count": 3,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 3,
+            "predicted_label": "top_up_failed",
+            "true_label": "topping_up_by_card"
+          },
+          {
+            "count": 3,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_acceptance",
+            "true_label": "atm_support"
+          },
+          {
+            "count": 3,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 3,
+            "predicted_label": "card_not_working",
+            "true_label": "card_swallowed"
+          }
+        ],
+        "ece_10_bins": 0.015664180949743547,
+        "examples": 3080,
+        "log_loss": 0.38957910210980745,
+        "macro_f1": 0.8858366749606053,
+        "reliability_bins": [
+          {
+            "accuracy": null,
+            "count": 0,
+            "lower": 0.0,
+            "mean_score": null,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.0,
+            "count": 4,
+            "lower": 0.1,
+            "mean_score": 0.1748744357945171,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.14285714285714285,
+            "count": 28,
+            "lower": 0.2,
+            "mean_score": 0.2610927954133924,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.3793103448275862,
+            "count": 58,
+            "lower": 0.3,
+            "mean_score": 0.353717159024387,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.42391304347826086,
+            "count": 92,
+            "lower": 0.4,
+            "mean_score": 0.45569566175798787,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.4621212121212121,
+            "count": 132,
+            "lower": 0.5,
+            "mean_score": 0.5517413824047727,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.6666666666666666,
+            "count": 120,
+            "lower": 0.6,
+            "mean_score": 0.6514152705661542,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.6580645161290323,
+            "count": 155,
+            "lower": 0.7,
+            "mean_score": 0.7515171363392551,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.8341463414634146,
+            "count": 205,
+            "lower": 0.8,
+            "mean_score": 0.8544805313818982,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9833770778652668,
+            "count": 2286,
+            "lower": 0.9,
+            "mean_score": 0.9866638147754906,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 2533,
+          "accepted_errors": 77,
+          "accepted_fraction": 0.8224025974025974,
+          "accuracy_among_accepted": 0.9696012633241216,
+          "errors_flagged": 276,
+          "examples": 3080,
+          "reviewed": 547,
+          "total_errors": 353
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9714285714285714
+      }
+    }
+  },
+  "reason": "One post-lock exploratory comparison of the fixed approaches; no tuning on test.",
+  "scope": "Full official test; previously viewed in v1. Exploratory comparison only.",
+  "selection_locked_before_test": "word_char_logistic",
+  "test_previously_viewed": true
+}

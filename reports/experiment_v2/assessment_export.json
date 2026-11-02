@@ -1,0 +1,12 @@
+{
+  "candidate": "word_char_logistic",
+  "contains_question_text": false,
+  "csv_sha256": "1424bc7c8904ee0e6b075dd8305fd34c34ada26e63ee3c0a96fa13747812351a",
+  "duckdb_reconciled_totals": {
+    "errors": 198,
+    "examples": 2002,
+    "flagged_for_review": 274
+  },
+  "scope": "Selected model's development assessment; not an untouched final test",
+  "score_kind": "temperature"
+}

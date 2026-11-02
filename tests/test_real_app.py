@@ -2,11 +2,13 @@ from pathlib import Path
 import hashlib
 import json
 
+import numpy as np
 import pytest
 from streamlit.testing.v1 import AppTest
 
 from supportlens.predict import load_bundle, predict
 from supportlens.evaluate import sql_summary
+from supportlens.calibration import temperature_scale
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(not (ROOT / "artifacts" / "metadata.json").exists(), reason="real artifact not available")
@@ -19,6 +21,21 @@ def test_real_bundle_has_compatible_output():
     assert len(bundle[2]["labels"]) == 77 and 0 <= result["score"] <= 1
 
 
+def test_active_release_matches_locked_model_and_scaled_inference():
+    vectorizer, model, meta = load_bundle()
+    lock = json.loads((ROOT / "reports" / "experiment_v2" / "final_lock.json").read_text(encoding="utf-8"))
+    assert meta["candidate_id"] == lock["selected_release"]
+    assert meta["sha256"] == lock["candidate_artifact_sha256"][meta["candidate_id"]]
+    assert vectorizer.transform([""]).shape[1] == model.n_features_in_ == meta["input_dim"]
+    text = "My card has not arrived yet."
+    raw = model.predict_proba(vectorizer.transform([text]))
+    adjusted = temperature_scale(raw, meta["temperature"])[0]
+    result = predict(text, (vectorizer, model, meta))
+    assert result["score"] == pytest.approx(float(adjusted.max()))
+    assert result["label"] == meta["labels"][int(np.argmax(adjusted))]
+    assert result["review"] == (result["score"] < meta["review_threshold"])
+
+
 def test_streamlit_app_real_artifact_and_invalid_input():
     app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
     assert not app.exception
@@ -28,6 +45,10 @@ def test_streamlit_app_real_artifact_and_invalid_input():
     app.button[0].click().run()
     assert not app.exception
     assert any(metric.label == "Suggested category" for metric in app.metric)
+    app.text_area[0].set_value("What is the weather like on Mars?")
+    app.button[0].click().run()
+    assert not app.exception
+    assert any("review recommended" in warning.value.lower() and "75%" in warning.value for warning in app.warning)
 
 
 def test_shipped_evaluation_reconciles_with_recorded_evidence():
@@ -39,3 +60,16 @@ def test_shipped_evaluation_reconciles_with_recorded_evidence():
     assert int(summary.examples.sum()) == totals["examples"]
     assert int(summary.errors.sum()) == totals["errors"]
     assert int(summary.flagged_for_review.sum()) == totals["flagged_for_review"]
+
+
+def test_selected_assessment_export_reconciles_with_locked_report():
+    root = ROOT / "reports" / "experiment_v2"
+    csv_path = root / "selected_assessment.csv"
+    evidence = json.loads((root / "assessment_export.json").read_text(encoding="utf-8"))
+    locked = json.loads((root / "final_lock.json").read_text(encoding="utf-8"))
+    assert hashlib.sha256(csv_path.read_bytes()).hexdigest() == evidence["csv_sha256"]
+    summary = sql_summary(csv_path)
+    assert int(summary.examples.sum()) == evidence["duckdb_reconciled_totals"]["examples"]
+    assert int(summary.errors.sum()) == evidence["duckdb_reconciled_totals"]["errors"]
+    assert int(summary.flagged_for_review.sum()) == evidence["duckdb_reconciled_totals"]["flagged_for_review"]
+    assert evidence["candidate"] == locked["selected_release"] and not evidence["contains_question_text"]

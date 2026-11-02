@@ -7,7 +7,7 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
-from supportlens.predict import load_bundle, predict  # noqa: E402
+from supportlens.predict import load_active_bundle, predict  # noqa: E402
 
 st.set_page_config(page_title="SupportLens", page_icon="🔎", layout="centered")
 st.markdown("""
@@ -18,6 +18,10 @@ st.markdown("""
     .intro {color:#4a5c58; font-size:1.08rem; line-height:1.55;}
     .stButton button {border-radius: 8px; font-weight: 650;}
     [data-testid="stMetric"] {background:#f2f7f4; border:1px solid #dfebe3; border-radius:10px; padding:14px;}
+    [data-testid="stMetricValue"], [data-testid="stMetricValue"] > div {
+        white-space: normal !important; overflow-wrap: anywhere; overflow: visible !important;
+        text-overflow: clip !important; line-height: 1.15;
+    }
 </style>
 """, unsafe_allow_html=True)
 st.markdown('<div class="eyebrow">An intent classification demo</div>', unsafe_allow_html=True)
@@ -38,7 +42,7 @@ question = st.text_area("Support question", value=samples[sample], height=125,
 
 @st.cache_resource
 def cached_bundle():
-    return load_bundle(ROOT / "artifacts")
+    return load_active_bundle(ROOT / "artifacts")
 
 
 def readable(label):
@@ -47,7 +51,8 @@ def readable(label):
 
 if st.button("Predict intent", type="primary"):
     try:
-        result = predict(question, cached_bundle())
+        bundle = cached_bundle()
+        result = predict(question, bundle)
     except ValueError as exc:
         st.warning(str(exc))
     except (OSError, KeyError, ImportError) as exc:
@@ -58,24 +63,40 @@ if st.button("Predict intent", type="primary"):
         left.metric("Suggested category", readable(result["label"]))
         right.metric("Model score", f"{result['score']:.1%}")
         if result["review"]:
-            st.warning("Review recommended: the top score is below the fixed review threshold.")
+            if bundle[2].get("review_all", False):
+                st.warning("Review recommended: this release flags every prediction for review.")
+            else:
+                st.warning(f"Review recommended: the top score is below the {bundle[2]['review_threshold']:.0%} review threshold.")
         else:
             st.success("Above the review threshold. A human can still review this suggestion.")
         if result["alternatives"]:
             st.caption("Other suggestions: " + " · ".join(
                 f"{readable(item['label'])} ({item['score']:.1%})" for item in result["alternatives"]))
+        st.caption("A high score can still be wrong, especially for an unfamiliar or ambiguous question.")
 
 with st.expander("About the model and evaluation"):
     try:
-        selection = json.loads((ROOT / "reports" / "selection.json").read_text(encoding="utf-8"))
-        measured = json.loads((ROOT / "reports" / "metrics.json").read_text(encoding="utf-8"))
-        selected = measured["selected_before_test"]
-        metrics = measured["models"][selected]
-        st.write(f"Selected on validation macro F1: **{selected}**. On the full official test split "
-                 f"({metrics['examples']:,} examples; {metrics['supported_labels']} labels), accuracy was "
-                 f"**{metrics['accuracy']:.1%}** and macro F1 was **{metrics['macro_f1']:.3f}**.")
-        st.write(f"The fixed review threshold is {selection['review_threshold']:.0%}. Model scores are not "
-                 "necessarily calibrated probabilities, and a high score does not reliably detect an unfamiliar question.")
+        meta = cached_bundle()[2]
+        if meta.get("artifact_version") == 2:
+            locked = json.loads((ROOT / "reports" / "experiment_v2" / "final_lock.json").read_text(encoding="utf-8"))
+            if locked["selected_release"] != meta["candidate_id"]:
+                raise ValueError("The active model and evaluation report do not match")
+            metrics = locked["assessment_results"][meta["candidate_id"]][meta["score_kind"]]
+            st.write(f"Word and character TF-IDF with logistic regression. On the development assessment "
+                     f"({metrics['examples']:,} examples; {metrics['supported_labels']} labels), accuracy was "
+                     f"**{metrics['accuracy']:.1%}** and macro F1 was **{metrics['macro_f1']:.3f}**. "
+                     "This assessment also informed the release decision.")
+            st.write("Scores use temperature scaling fitted on development predictions. Calibration can help, "
+                     "but scores are not guaranteed probabilities.")
+        else:
+            measured = json.loads((ROOT / "reports" / "metrics.json").read_text(encoding="utf-8"))
+            metrics = measured["models"][measured["selected_before_test"]]
+            st.write(f"V1 logistic regression: official test accuracy **{metrics['accuracy']:.1%}** "
+                     f"and macro F1 **{metrics['macro_f1']:.3f}** on {metrics['examples']:,} examples.")
+        if meta.get("review_all", False):
+            st.write("All predictions are flagged for review.")
+        else:
+            st.write(f"Review threshold: {meta['review_threshold']:.0%}. A high score does not reliably detect an unfamiliar question.")
     except (OSError, KeyError, ValueError):
         st.write("Evaluation evidence is unavailable. See the project README for setup.")
 

@@ -1,14 +1,34 @@
 """Load only the trusted, locally packaged artifacts; never accept visitor-supplied models."""
 import json
 from pathlib import Path
+import re
 import joblib
 import numpy as np
 import sklearn
+from .calibration import temperature_scale
 from .config import ARTIFACT_DIR, MAX_INPUT_LENGTH
 from .data import sha256_file
 
 
-def load_bundle(directory=ARTIFACT_DIR):
+def load_active_bundle(directory=ARTIFACT_DIR):
+    """Resolve the trusted project's release pointer, with v1 backward compatibility."""
+    directory = Path(directory)
+    pointer_path = directory / "active.json"
+    if not pointer_path.exists():
+        return load_bundle(directory)
+    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    release = pointer["release"]
+    if not isinstance(release, str) or not re.fullmatch(r"[A-Za-z0-9_-]+", release):
+        raise ValueError("Invalid active release name")
+    release_dir = directory / release
+    if sha256_file(release_dir / "metadata.json") != pointer["metadata_sha256"]:
+        raise ValueError("Active release metadata checksum mismatch")
+    return load_bundle(release_dir)
+
+
+def load_bundle(directory=None):
+    if directory is None:
+        return load_active_bundle(ARTIFACT_DIR)
     directory = Path(directory)
     meta = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
     if sklearn.__version__ != meta["sklearn_version"]:
@@ -17,7 +37,8 @@ def load_bundle(directory=ARTIFACT_DIR):
         if sha256_file(directory / name) != expected:
             raise ValueError(f"Artifact checksum mismatch: {name}")
     vectorizer = joblib.load(directory / "vectorizer.joblib")
-    if len(vectorizer.vocabulary_) != meta["input_dim"]:
+    # FeatureUnion has multiple vocabularies; the transformed width works for both versions.
+    if vectorizer.transform([""]).shape[1] != meta["input_dim"]:
         raise ValueError("Artifact vocabulary size does not match model metadata")
     if len(meta["labels"]) != meta["output_dim"]:
         raise ValueError("Artifact labels do not match model metadata")
@@ -50,7 +71,10 @@ def predict(text, bundle):
         scores = predict_probabilities(model, x)[0]
     if len(scores) != len(meta["labels"]) or not np.isfinite(scores).all():
         raise ValueError("Model output does not match the saved labels")
+    temperature = meta.get("temperature", 1.0)
+    if temperature != 1.0:
+        scores = temperature_scale(np.asarray(scores).reshape(1, -1), temperature)[0]
     top = np.argsort(-scores, kind="stable")[:min(3, len(scores))]
     return {"label": meta["labels"][int(top[0])], "score": float(scores[top[0]]),
-            "review": bool(scores[top[0]] < meta["review_threshold"]),
+            "review": bool(meta.get("review_all", False) or scores[top[0]] < meta["review_threshold"]),
             "alternatives": [{"label": meta["labels"][int(i)], "score": float(scores[i])} for i in top[1:]]}
