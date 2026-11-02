@@ -1,0 +1,1479 @@
+{
+  "assessment_examples": 2002,
+  "assignment_sha256": "ea409451ad5d441da861f5245ab9776159bdbc071d654d415857775436827569",
+  "candidate_configs": {
+    "char": {
+      "analyzer": "char_wb",
+      "max_features": 18000,
+      "min_df": 2,
+      "ngram_range": [
+        3,
+        5
+      ],
+      "sublinear_tf": true,
+      "weight": 0.7
+    },
+    "logistic": {
+      "C": 4,
+      "max_iter": 500,
+      "solver": "lbfgs"
+    },
+    "torch": {
+      "batch_size": 128,
+      "epochs": 10,
+      "hidden_dim": 64,
+      "learning_rate": 0.003
+    },
+    "word": {
+      "max_features": 6000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    }
+  },
+  "candidate_order": [
+    "word_logistic",
+    "word_char_logistic",
+    "word_torch"
+  ],
+  "comparison_to_baseline": {
+    "word_char_logistic": {
+      "bootstrap_95": {
+        "lower_95": 0.0215871197591526,
+        "repeats": 1000,
+        "seed": 2027,
+        "unit": "class-stratified rows, paired across models",
+        "upper_95": 0.031176208059892425
+      },
+      "eligible": true,
+      "macro_f1_gain_vs_baseline": 0.026200298986119197
+    },
+    "word_logistic": {
+      "bootstrap_95": {
+        "lower_95": 0.0,
+        "repeats": 1000,
+        "seed": 2027,
+        "unit": "class-stratified rows, paired across models",
+        "upper_95": 0.0
+      },
+      "eligible": false,
+      "macro_f1_gain_vs_baseline": 0.0
+    },
+    "word_torch": {
+      "bootstrap_95": {
+        "lower_95": 0.0047099540918589785,
+        "repeats": 1000,
+        "seed": 2027,
+        "unit": "class-stratified rows, paired across models",
+        "upper_95": 0.015287009354067096
+      },
+      "eligible": true,
+      "macro_f1_gain_vs_baseline": 0.009837307907152537
+    }
+  },
+  "created_at_utc": "2026-11-02T18:19:06.510663+00:00",
+  "development_examples": 8001,
+  "fold_runs": {
+    "word_char_logistic": [
+      {
+        "convergence_warnings": [],
+        "features": 16926,
+        "iterations": [
+          34
+        ],
+        "model_fit_seconds": 9.133700999998837,
+        "model_parameter_bytes": 10427032,
+        "train_examples": 5335,
+        "training_nonzero_entries": 643097,
+        "validation_examples": 2666,
+        "validation_prediction_seconds": 0.31464430000050925,
+        "vectorizer_fit_seconds": 0.6050357999993139
+      },
+      {
+        "convergence_warnings": [],
+        "features": 17271,
+        "iterations": [
+          37
+        ],
+        "model_fit_seconds": 9.160502099999576,
+        "model_parameter_bytes": 10639552,
+        "train_examples": 5334,
+        "training_nonzero_entries": 647962,
+        "validation_examples": 2667,
+        "validation_prediction_seconds": 0.25928440000279807,
+        "vectorizer_fit_seconds": 0.5850510999953258
+      },
+      {
+        "convergence_warnings": [],
+        "features": 17238,
+        "iterations": [
+          30
+        ],
+        "model_fit_seconds": 7.126739400002407,
+        "model_parameter_bytes": 10619224,
+        "train_examples": 5333,
+        "training_nonzero_entries": 650894,
+        "validation_examples": 2668,
+        "validation_prediction_seconds": 0.2712376999988919,
+        "vectorizer_fit_seconds": 0.5365339999989374
+      }
+    ],
+    "word_logistic": [
+      {
+        "convergence_warnings": [],
+        "features": 6000,
+        "iterations": [
+          44
+        ],
+        "model_fit_seconds": 4.030282800005807,
+        "model_parameter_bytes": 3696616,
+        "train_examples": 5335,
+        "training_nonzero_entries": 94427,
+        "validation_examples": 2666,
+        "validation_prediction_seconds": 0.06381600000167964,
+        "vectorizer_fit_seconds": 0.12102589999994962
+      },
+      {
+        "convergence_warnings": [],
+        "features": 6000,
+        "iterations": [
+          39
+        ],
+        "model_fit_seconds": 3.2728597000023,
+        "model_parameter_bytes": 3696616,
+        "train_examples": 5334,
+        "training_nonzero_entries": 94680,
+        "validation_examples": 2667,
+        "validation_prediction_seconds": 0.05710970000654925,
+        "vectorizer_fit_seconds": 0.12161429999832762
+      },
+      {
+        "convergence_warnings": [],
+        "features": 6000,
+        "iterations": [
+          44
+        ],
+        "model_fit_seconds": 3.441900199999509,
+        "model_parameter_bytes": 3696616,
+        "train_examples": 5333,
+        "training_nonzero_entries": 95458,
+        "validation_examples": 2668,
+        "validation_prediction_seconds": 0.07983230000536423,
+        "vectorizer_fit_seconds": 0.1257737999985693
+      }
+    ],
+    "word_torch": [
+      {
+        "convergence_warnings": [],
+        "features": 6000,
+        "model_fit_seconds": 6.876315599998634,
+        "model_parameter_bytes": 1556276,
+        "train_examples": 5335,
+        "training_loss": [
+          4.195944846536696,
+          3.2397541788882367,
+          1.704124150660514,
+          0.7879386531714535,
+          0.44087016402613705,
+          0.2813481639704083,
+          0.1938494646672121,
+          0.1414903469292941,
+          0.10644225186433542,
+          0.08244602802823164
+        ],
+        "training_nonzero_entries": 94427,
+        "validation_examples": 2666,
+        "validation_prediction_seconds": 0.1792425000021467,
+        "vectorizer_fit_seconds": 0.11105479999969248
+      },
+      {
+        "convergence_warnings": [],
+        "features": 6000,
+        "model_fit_seconds": 3.9969999000022653,
+        "model_parameter_bytes": 1556276,
+        "train_examples": 5334,
+        "training_loss": [
+          4.188681579771496,
+          3.2263600826263428,
+          1.710218724750337,
+          0.7986442077727545,
+          0.4463503658771515,
+          0.28134001259292873,
+          0.19288099521682375,
+          0.13884138848100389,
+          0.10409915411756152,
+          0.08074863645292464
+        ],
+        "training_nonzero_entries": 94680,
+        "validation_examples": 2667,
+        "validation_prediction_seconds": 0.12150400000246009,
+        "vectorizer_fit_seconds": 0.13879150000138907
+      },
+      {
+        "convergence_warnings": [],
+        "features": 6000,
+        "model_fit_seconds": 4.05368940000335,
+        "model_parameter_bytes": 1556276,
+        "train_examples": 5333,
+        "training_loss": [
+          4.193603322002112,
+          3.240989829325752,
+          1.7134586995792014,
+          0.7955068692735408,
+          0.44178013380329806,
+          0.2800809850243227,
+          0.19168946980737106,
+          0.13755920421092524,
+          0.10299325833429254,
+          0.07996250293379135
+        ],
+        "training_nonzero_entries": 95458,
+        "validation_examples": 2668,
+        "validation_prediction_seconds": 0.11289879999822006,
+        "vectorizer_fit_seconds": 0.12993509999796515
+      }
+    ]
+  },
+  "fold_seed": 137,
+  "labels": 77,
+  "models": {
+    "word_char_logistic": {
+      "raw": {
+        "accuracy": 0.8753905761779778,
+        "common_confusions": [
+          {
+            "count": 14,
+            "predicted_label": "card_payment_not_recognised",
+            "true_label": "direct_debit_payment_not_recognised"
+          },
+          {
+            "count": 12,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 11,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 11,
+            "predicted_label": "pending_top_up",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 10,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "disposable_card_limits",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 9,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 9,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 8,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 8,
+            "predicted_label": "declined_cash_withdrawal",
+            "true_label": "wrong_amount_of_cash_received"
+          },
+          {
+            "count": 8,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 8,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 8,
+            "predicted_label": "failed_transfer",
+            "true_label": "beneficiary_not_allowed"
+          },
+          {
+            "count": 8,
+            "predicted_label": "card_payment_fee_charged",
+            "true_label": "transfer_fee_charged"
+          },
+          {
+            "count": 8,
+            "predicted_label": "card_payment_wrong_exchange_rate",
+            "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+          },
+          {
+            "count": 8,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 7,
+            "predicted_label": "wrong_exchange_rate_for_cash_withdrawal",
+            "true_label": "card_payment_wrong_exchange_rate"
+          },
+          {
+            "count": 7,
+            "predicted_label": "declined_card_payment",
+            "true_label": "card_not_working"
+          },
+          {
+            "count": 7,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 7,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          }
+        ],
+        "ece_10_bins": 0.24063103430895613,
+        "examples": 8001,
+        "log_loss": 0.7281571484098215,
+        "macro_f1": 0.8734235738785596,
+        "reliability_bins": [
+          {
+            "accuracy": 0.25,
+            "count": 120,
+            "lower": 0.0,
+            "mean_score": 0.07804219308029518,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.4906054279749478,
+            "count": 479,
+            "lower": 0.1,
+            "mean_score": 0.15155664060330024,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.6394779771615008,
+            "count": 613,
+            "lower": 0.2,
+            "mean_score": 0.2516803128687873,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.748006379585327,
+            "count": 627,
+            "lower": 0.3,
+            "mean_score": 0.35125100383710467,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.8290598290598291,
+            "count": 702,
+            "lower": 0.4,
+            "mean_score": 0.45039676120674965,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.8810511756569848,
+            "count": 723,
+            "lower": 0.5,
+            "mean_score": 0.5503765939965669,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.9604790419161676,
+            "count": 835,
+            "lower": 0.6,
+            "mean_score": 0.6510738208507268,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.9754178957718781,
+            "count": 1017,
+            "lower": 0.7,
+            "mean_score": 0.7531182789396822,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.9875366568914956,
+            "count": 1364,
+            "lower": 0.8,
+            "mean_score": 0.8523311249194072,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9980276134122288,
+            "count": 1521,
+            "lower": 0.9,
+            "mean_score": 0.9441075614544729,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 5990,
+          "accepted_errors": 244,
+          "accepted_fraction": 0.7486564179477565,
+          "accuracy_among_accepted": 0.9592654424040067,
+          "errors_flagged": 753,
+          "examples": 8001,
+          "reviewed": 2011,
+          "total_errors": 997
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9623797025371829
+      },
+      "temperature": {
+        "accuracy": 0.8753905761779778,
+        "common_confusions": [
+          {
+            "count": 14,
+            "predicted_label": "card_payment_not_recognised",
+            "true_label": "direct_debit_payment_not_recognised"
+          },
+          {
+            "count": 12,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 11,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 11,
+            "predicted_label": "pending_top_up",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 10,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "disposable_card_limits",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 9,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 9,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 8,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 8,
+            "predicted_label": "declined_cash_withdrawal",
+            "true_label": "wrong_amount_of_cash_received"
+          },
+          {
+            "count": 8,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 8,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 8,
+            "predicted_label": "failed_transfer",
+            "true_label": "beneficiary_not_allowed"
+          },
+          {
+            "count": 8,
+            "predicted_label": "card_payment_fee_charged",
+            "true_label": "transfer_fee_charged"
+          },
+          {
+            "count": 8,
+            "predicted_label": "card_payment_wrong_exchange_rate",
+            "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+          },
+          {
+            "count": 8,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 7,
+            "predicted_label": "wrong_exchange_rate_for_cash_withdrawal",
+            "true_label": "card_payment_wrong_exchange_rate"
+          },
+          {
+            "count": 7,
+            "predicted_label": "declined_card_payment",
+            "true_label": "card_not_working"
+          },
+          {
+            "count": 7,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 7,
+            "predicted_label": "verify_my_identity",
+            "true_label": "unable_to_verify_identity"
+          }
+        ],
+        "ece_10_bins": 0.008196126853316799,
+        "examples": 8001,
+        "log_loss": 0.4441902245752017,
+        "macro_f1": 0.8734235738785596,
+        "reliability_bins": [
+          {
+            "accuracy": 0.0,
+            "count": 3,
+            "lower": 0.0,
+            "mean_score": 0.0816009239341984,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.20833333333333334,
+            "count": 48,
+            "lower": 0.1,
+            "mean_score": 0.16580641050428369,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.26666666666666666,
+            "count": 120,
+            "lower": 0.2,
+            "mean_score": 0.2536954854945482,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.34554973821989526,
+            "count": 191,
+            "lower": 0.3,
+            "mean_score": 0.35351952074501913,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.4826254826254826,
+            "count": 259,
+            "lower": 0.4,
+            "mean_score": 0.4517262166972622,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.5502958579881657,
+            "count": 338,
+            "lower": 0.5,
+            "mean_score": 0.5481202879168604,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.6626506024096386,
+            "count": 332,
+            "lower": 0.6,
+            "mean_score": 0.6518726609788015,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.7297921478060047,
+            "count": 433,
+            "lower": 0.7,
+            "mean_score": 0.7520197744944299,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.8429003021148036,
+            "count": 662,
+            "lower": 0.8,
+            "mean_score": 0.8552829120240699,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9779162956366875,
+            "count": 5615,
+            "lower": 0.9,
+            "mean_score": 0.9832723003476879,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 6511,
+          "accepted_errors": 288,
+          "accepted_fraction": 0.8137732783402075,
+          "accuracy_among_accepted": 0.9557671632621717,
+          "errors_flagged": 709,
+          "examples": 8001,
+          "reviewed": 1490,
+          "total_errors": 997
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9623797025371829
+      }
+    },
+    "word_logistic": {
+      "raw": {
+        "accuracy": 0.8503937007874016,
+        "common_confusions": [
+          {
+            "count": 15,
+            "predicted_label": "disposable_card_limits",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 14,
+            "predicted_label": "card_payment_not_recognised",
+            "true_label": "direct_debit_payment_not_recognised"
+          },
+          {
+            "count": 12,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 12,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 11,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 11,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 11,
+            "predicted_label": "card_payment_wrong_exchange_rate",
+            "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+          },
+          {
+            "count": 10,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 10,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "pending_top_up",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 10,
+            "predicted_label": "top_up_reverted",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 9,
+            "predicted_label": "wrong_exchange_rate_for_cash_withdrawal",
+            "true_label": "card_payment_wrong_exchange_rate"
+          },
+          {
+            "count": 9,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 9,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 9,
+            "predicted_label": "Refund_not_showing_up",
+            "true_label": "request_refund"
+          },
+          {
+            "count": 8,
+            "predicted_label": "declined_card_payment",
+            "true_label": "card_not_working"
+          },
+          {
+            "count": 8,
+            "predicted_label": "declined_cash_withdrawal",
+            "true_label": "wrong_amount_of_cash_received"
+          },
+          {
+            "count": 8,
+            "predicted_label": "pending_card_payment",
+            "true_label": "pending_transfer"
+          },
+          {
+            "count": 8,
+            "predicted_label": "failed_transfer",
+            "true_label": "beneficiary_not_allowed"
+          }
+        ],
+        "ece_10_bins": 0.3119711519699221,
+        "examples": 8001,
+        "log_loss": 0.9577930367746507,
+        "macro_f1": 0.8472232748924404,
+        "reliability_bins": [
+          {
+            "accuracy": 0.29770992366412213,
+            "count": 262,
+            "lower": 0.0,
+            "mean_score": 0.07674539308524382,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.5647058823529412,
+            "count": 850,
+            "lower": 0.1,
+            "mean_score": 0.15118247625462852,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.7232779097387173,
+            "count": 842,
+            "lower": 0.2,
+            "mean_score": 0.25087345337933425,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.7808056872037915,
+            "count": 844,
+            "lower": 0.3,
+            "mean_score": 0.3502390932244148,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.8762376237623762,
+            "count": 808,
+            "lower": 0.4,
+            "mean_score": 0.44993698621141537,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.9233490566037735,
+            "count": 848,
+            "lower": 0.5,
+            "mean_score": 0.5492520295620842,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.9610705596107056,
+            "count": 822,
+            "lower": 0.6,
+            "mean_score": 0.6514393731945927,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.9811912225705329,
+            "count": 957,
+            "lower": 0.7,
+            "mean_score": 0.7507625496814945,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.9902534113060428,
+            "count": 1026,
+            "lower": 0.8,
+            "mean_score": 0.8498249269672488,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 1.0,
+            "count": 742,
+            "lower": 0.9,
+            "mean_score": 0.9397184192049413,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 5203,
+          "accepted_errors": 225,
+          "accepted_fraction": 0.6502937132858393,
+          "accuracy_among_accepted": 0.9567557178550836,
+          "errors_flagged": 972,
+          "examples": 8001,
+          "reviewed": 2798,
+          "total_errors": 1197
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9491313585801775
+      },
+      "temperature": {
+        "accuracy": 0.8503937007874016,
+        "common_confusions": [
+          {
+            "count": 15,
+            "predicted_label": "disposable_card_limits",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 14,
+            "predicted_label": "card_payment_not_recognised",
+            "true_label": "direct_debit_payment_not_recognised"
+          },
+          {
+            "count": 12,
+            "predicted_label": "get_physical_card",
+            "true_label": "pin_blocked"
+          },
+          {
+            "count": 12,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 11,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 11,
+            "predicted_label": "why_verify_identity",
+            "true_label": "unable_to_verify_identity"
+          },
+          {
+            "count": 11,
+            "predicted_label": "card_payment_wrong_exchange_rate",
+            "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+          },
+          {
+            "count": 10,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 10,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "pending_top_up",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 10,
+            "predicted_label": "top_up_reverted",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 9,
+            "predicted_label": "wrong_exchange_rate_for_cash_withdrawal",
+            "true_label": "card_payment_wrong_exchange_rate"
+          },
+          {
+            "count": 9,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 9,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 9,
+            "predicted_label": "Refund_not_showing_up",
+            "true_label": "request_refund"
+          },
+          {
+            "count": 8,
+            "predicted_label": "declined_card_payment",
+            "true_label": "card_not_working"
+          },
+          {
+            "count": 8,
+            "predicted_label": "declined_cash_withdrawal",
+            "true_label": "wrong_amount_of_cash_received"
+          },
+          {
+            "count": 8,
+            "predicted_label": "pending_card_payment",
+            "true_label": "pending_transfer"
+          },
+          {
+            "count": 8,
+            "predicted_label": "failed_transfer",
+            "true_label": "beneficiary_not_allowed"
+          }
+        ],
+        "ece_10_bins": 0.01661762697258934,
+        "examples": 8001,
+        "log_loss": 0.5486638373047885,
+        "macro_f1": 0.8472232748924404,
+        "reliability_bins": [
+          {
+            "accuracy": 0.0,
+            "count": 5,
+            "lower": 0.0,
+            "mean_score": 0.09015256517402934,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.1506849315068493,
+            "count": 73,
+            "lower": 0.1,
+            "mean_score": 0.1615729483060329,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.32167832167832167,
+            "count": 143,
+            "lower": 0.2,
+            "mean_score": 0.2572947652982517,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.44015444015444016,
+            "count": 259,
+            "lower": 0.3,
+            "mean_score": 0.3530640396583766,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.502906976744186,
+            "count": 344,
+            "lower": 0.4,
+            "mean_score": 0.45263042655676244,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.5503685503685504,
+            "count": 407,
+            "lower": 0.5,
+            "mean_score": 0.5490857093194678,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.6588541666666666,
+            "count": 384,
+            "lower": 0.6,
+            "mean_score": 0.6495141975263135,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.7334630350194552,
+            "count": 514,
+            "lower": 0.7,
+            "mean_score": 0.7529637793180055,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.8324175824175825,
+            "count": 728,
+            "lower": 0.8,
+            "mean_score": 0.8546545445661309,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9720062208398134,
+            "count": 5144,
+            "lower": 0.9,
+            "mean_score": 0.9821798394886668,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 5739,
+          "accepted_errors": 241,
+          "accepted_fraction": 0.7172853393325834,
+          "accuracy_among_accepted": 0.9580066213626067,
+          "errors_flagged": 956,
+          "examples": 8001,
+          "reviewed": 2262,
+          "total_errors": 1197
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9491313585801775
+      }
+    },
+    "word_torch": {
+      "raw": {
+        "accuracy": 0.8586426696662918,
+        "common_confusions": [
+          {
+            "count": 15,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 14,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 13,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 13,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 13,
+            "predicted_label": "card_payment_not_recognised",
+            "true_label": "direct_debit_payment_not_recognised"
+          },
+          {
+            "count": 13,
+            "predicted_label": "disposable_card_limits",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 13,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 10,
+            "predicted_label": "declined_cash_withdrawal",
+            "true_label": "wrong_amount_of_cash_received"
+          },
+          {
+            "count": 10,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 9,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 9,
+            "predicted_label": "pending_transfer",
+            "true_label": "transfer_timing"
+          },
+          {
+            "count": 8,
+            "predicted_label": "transfer_fee_charged",
+            "true_label": "card_payment_fee_charged"
+          },
+          {
+            "count": 8,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 8,
+            "predicted_label": "cash_withdrawal_charge",
+            "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+          },
+          {
+            "count": 8,
+            "predicted_label": "pending_top_up",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 7,
+            "predicted_label": "transfer_fee_charged",
+            "true_label": "extra_charge_on_statement"
+          },
+          {
+            "count": 7,
+            "predicted_label": "declined_card_payment",
+            "true_label": "card_not_working"
+          },
+          {
+            "count": 7,
+            "predicted_label": "pending_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 7,
+            "predicted_label": "direct_debit_payment_not_recognised",
+            "true_label": "card_payment_not_recognised"
+          }
+        ],
+        "ece_10_bins": 0.07752320285080566,
+        "examples": 8001,
+        "log_loss": 0.54350793465877,
+        "macro_f1": 0.857060582799593,
+        "reliability_bins": [
+          {
+            "accuracy": 0.13333333333333333,
+            "count": 15,
+            "lower": 0.0,
+            "mean_score": 0.08389071747660637,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.2893081761006289,
+            "count": 159,
+            "lower": 0.1,
+            "mean_score": 0.1568999654092129,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.3814102564102564,
+            "count": 312,
+            "lower": 0.2,
+            "mean_score": 0.2521210824354337,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.5286103542234333,
+            "count": 367,
+            "lower": 0.3,
+            "mean_score": 0.3517895193938014,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.6094069529652352,
+            "count": 489,
+            "lower": 0.4,
+            "mean_score": 0.45151109393145167,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.6948529411764706,
+            "count": 544,
+            "lower": 0.5,
+            "mean_score": 0.5510699185816681,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.7955801104972375,
+            "count": 543,
+            "lower": 0.6,
+            "mean_score": 0.6520164775804481,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.8940998487140696,
+            "count": 661,
+            "lower": 0.7,
+            "mean_score": 0.7523168470603435,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.9379243452958292,
+            "count": 1031,
+            "lower": 0.8,
+            "mean_score": 0.8537175933442915,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9904639175257732,
+            "count": 3880,
+            "lower": 0.9,
+            "mean_score": 0.9700213105100947,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 5991,
+          "accepted_errors": 247,
+          "accepted_fraction": 0.7487814023247095,
+          "accuracy_among_accepted": 0.9587714905691871,
+          "errors_flagged": 884,
+          "examples": 8001,
+          "reviewed": 2010,
+          "total_errors": 1131
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9568803899512561
+      },
+      "temperature": {
+        "accuracy": 0.8586426696662918,
+        "common_confusions": [
+          {
+            "count": 15,
+            "predicted_label": "top_up_failed",
+            "true_label": "top_up_reverted"
+          },
+          {
+            "count": 14,
+            "predicted_label": "failed_transfer",
+            "true_label": "declined_transfer"
+          },
+          {
+            "count": 13,
+            "predicted_label": "top_up_failed",
+            "true_label": "pending_top_up"
+          },
+          {
+            "count": 13,
+            "predicted_label": "balance_not_updated_after_bank_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 13,
+            "predicted_label": "card_payment_not_recognised",
+            "true_label": "direct_debit_payment_not_recognised"
+          },
+          {
+            "count": 13,
+            "predicted_label": "disposable_card_limits",
+            "true_label": "get_disposable_virtual_card"
+          },
+          {
+            "count": 13,
+            "predicted_label": "why_verify_identity",
+            "true_label": "verify_my_identity"
+          },
+          {
+            "count": 10,
+            "predicted_label": "card_arrival",
+            "true_label": "card_delivery_estimate"
+          },
+          {
+            "count": 10,
+            "predicted_label": "declined_cash_withdrawal",
+            "true_label": "wrong_amount_of_cash_received"
+          },
+          {
+            "count": 10,
+            "predicted_label": "unable_to_verify_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 9,
+            "predicted_label": "verify_my_identity",
+            "true_label": "why_verify_identity"
+          },
+          {
+            "count": 9,
+            "predicted_label": "pending_transfer",
+            "true_label": "transfer_timing"
+          },
+          {
+            "count": 8,
+            "predicted_label": "transfer_fee_charged",
+            "true_label": "card_payment_fee_charged"
+          },
+          {
+            "count": 8,
+            "predicted_label": "get_disposable_virtual_card",
+            "true_label": "disposable_card_limits"
+          },
+          {
+            "count": 8,
+            "predicted_label": "cash_withdrawal_charge",
+            "true_label": "wrong_exchange_rate_for_cash_withdrawal"
+          },
+          {
+            "count": 8,
+            "predicted_label": "pending_top_up",
+            "true_label": "top_up_failed"
+          },
+          {
+            "count": 7,
+            "predicted_label": "transfer_fee_charged",
+            "true_label": "extra_charge_on_statement"
+          },
+          {
+            "count": 7,
+            "predicted_label": "declined_card_payment",
+            "true_label": "card_not_working"
+          },
+          {
+            "count": 7,
+            "predicted_label": "pending_transfer",
+            "true_label": "transfer_not_received_by_recipient"
+          },
+          {
+            "count": 7,
+            "predicted_label": "direct_debit_payment_not_recognised",
+            "true_label": "card_payment_not_recognised"
+          }
+        ],
+        "ece_10_bins": 0.011675078879060743,
+        "examples": 8001,
+        "log_loss": 0.49814437974576997,
+        "macro_f1": 0.857060582799593,
+        "reliability_bins": [
+          {
+            "accuracy": 0.0,
+            "count": 2,
+            "lower": 0.0,
+            "mean_score": 0.08545825266372686,
+            "upper": 0.1
+          },
+          {
+            "accuracy": 0.21428571428571427,
+            "count": 56,
+            "lower": 0.1,
+            "mean_score": 0.1642544939224229,
+            "upper": 0.2
+          },
+          {
+            "accuracy": 0.265625,
+            "count": 128,
+            "lower": 0.2,
+            "mean_score": 0.257916576558363,
+            "upper": 0.3
+          },
+          {
+            "accuracy": 0.35772357723577236,
+            "count": 246,
+            "lower": 0.3,
+            "mean_score": 0.3537392223826066,
+            "upper": 0.4
+          },
+          {
+            "accuracy": 0.5135135135135135,
+            "count": 333,
+            "lower": 0.4,
+            "mean_score": 0.4533742834512708,
+            "upper": 0.5
+          },
+          {
+            "accuracy": 0.58656330749354,
+            "count": 387,
+            "lower": 0.5,
+            "mean_score": 0.5493683665657221,
+            "upper": 0.6
+          },
+          {
+            "accuracy": 0.6211764705882353,
+            "count": 425,
+            "lower": 0.6,
+            "mean_score": 0.6513601806987218,
+            "upper": 0.7
+          },
+          {
+            "accuracy": 0.7452107279693486,
+            "count": 522,
+            "lower": 0.7,
+            "mean_score": 0.7517983164879047,
+            "upper": 0.8
+          },
+          {
+            "accuracy": 0.8698060941828255,
+            "count": 722,
+            "lower": 0.8,
+            "mean_score": 0.8552270201808434,
+            "upper": 0.9
+          },
+          {
+            "accuracy": 0.9762548262548263,
+            "count": 5180,
+            "lower": 0.9,
+            "mean_score": 0.9815172039745982,
+            "upper": 1.0
+          }
+        ],
+        "review": {
+          "accepted": 6036,
+          "accepted_errors": 244,
+          "accepted_fraction": 0.754405699287589,
+          "accuracy_among_accepted": 0.9595758780649437,
+          "errors_flagged": 887,
+          "examples": 8001,
+          "reviewed": 1965,
+          "total_errors": 1131
+        },
+        "supported_labels": 77,
+        "top3_accuracy": 0.9568803899512561
+      }
+    }
+  },
+  "notes": [
+    "Temperature and review thresholds were fit on these out-of-fold labels; their development estimates can be optimistic.",
+    "The separate assessment affects a predeclared release gate and is therefore part of development, not an untouched final test."
+  ],
+  "review_policies": {
+    "word_char_logistic": {
+      "raw": {
+        "development_accepted": 5990,
+        "development_accepted_correct": 5746,
+        "development_wilson_lower": 0.953958114981723,
+        "review_all": false,
+        "threshold": 0.425
+      },
+      "temperature": {
+        "development_accepted": 6511,
+        "development_accepted_correct": 6223,
+        "development_wilson_lower": 0.9504983888651236,
+        "review_all": false,
+        "threshold": 0.75
+      }
+    },
+    "word_logistic": {
+      "raw": {
+        "development_accepted": 5203,
+        "development_accepted_correct": 4978,
+        "development_wilson_lower": 0.9508835518816336,
+        "review_all": false,
+        "threshold": 0.4
+      },
+      "temperature": {
+        "development_accepted": 5739,
+        "development_accepted_correct": 5498,
+        "development_wilson_lower": 0.9525037013795093,
+        "review_all": false,
+        "threshold": 0.825
+      }
+    },
+    "word_torch": {
+      "raw": {
+        "development_accepted": 5991,
+        "development_accepted_correct": 5744,
+        "development_wilson_lower": 0.9534360651237316,
+        "review_all": false,
+        "threshold": 0.625
+      },
+      "temperature": {
+        "development_accepted": 6036,
+        "development_accepted_correct": 5792,
+        "development_wilson_lower": 0.9543079726892496,
+        "review_all": false,
+        "threshold": 0.775
+      }
+    }
+  },
+  "scope": "Three group-aware out-of-fold predictions on the development pool from official training data",
+  "selected_for_assessment_gate": "word_char_logistic",
+  "selection_rule": "See docs/EXPERIMENT_PLAN.md; rank by out-of-fold macro F1 with prespecified eligibility and simplicity rules.",
+  "split_seed": 73,
+  "temperature": {
+    "word_char_logistic": 0.5173768763742894,
+    "word_logistic": 0.4768177789410765,
+    "word_torch": 0.7383747229719143
+  },
+  "train_data_sha256": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+  "versions": {
+    "numpy": "2.1.3",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.14",
+    "sklearn": "1.6.1",
+    "torch": "2.6.0+cpu"
+  }
+}
