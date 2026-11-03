@@ -65,7 +65,7 @@ if st.button("Predict intent", type="primary"):
         st.error("The model files are missing or incompatible. Follow the setup instructions in the README.")
     except ValueError as exc:
         st.warning(str(exc))
-    except (OSError, KeyError, ImportError) as exc:
+    except (OSError, KeyError, ImportError):
         st.error("The model files are missing or incompatible. Follow the setup instructions in the README.")
     else:
         st.subheader("Prediction")
